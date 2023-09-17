@@ -12,10 +12,24 @@ mod_vocab_ui <- function(id){
 
   tagList(
     selectInput(ns("language"), "Choose Language:", choices = c("EN", "FR")),
-    radioButtons(ns("word_source"), "Word Source:", choices = c("Random", "Choose")),
+    radioButtons(ns("word_source"), "Word Source:",
+                 choices = c("Random", "User Choice"),
+                 selected = "Random"),
+    conditionalPanel(
+      condition = "output.user_word",
+      ns = ns,
+      textInput(ns("user_word_to_translate"), "Enter word:")
+      ),
+    conditionalPanel(
+      condition = "!output.user_word",
+      ns = ns,
+      actionButton(ns("btn_get_word"), "Sample a word")
+    ),
     uiOutput(ns("word_display")),
     textInput(ns("guess"), "Your Guess:"),
     actionButton(ns("submit"), "Submit"),
+
+    actionButton(ns("btn_next"), "Next"),
     textOutput(ns("feedback")),
     tags$script(HTML(submit_on_enter(btn_id = ns("submit"))))
   )
@@ -33,30 +47,68 @@ mod_vocab_server <- function(id){
       read.csv("vocab_1000.csv")
     })
 
+    list_reactives <- reactiveValues(
+      user_word = FALSE
+    )
+
+    output$user_word <- reactive({
+      list_reactives$user_word
+    })
+    outputOptions(
+      output, "user_word", suspendWhenHidden = FALSE
+    )
+
+    observe({
+      if (input$word_source == "User Choice") {
+        message("Set input source to User Choice")
+        list_reactives$user_word <- TRUE
+      } else {
+        message("Set input source to Random")
+        list_reactives$user_word <- FALSE
+      }
+    })
+
+    observe({
+      message("word_to_translate: ")
+      print(word_to_translate())
+    })
+
     # Randomly sample or let the user choose a word
-    random_word <- reactive({
+    word_to_translate <- eventReactive(input$btn_get_word, {
       if (input$word_source == "Random") {
+        message("Sample a random word")
         sample(vocab_data()[, input$language], 1)
       } else {
-        # Code to let user choose a word
+        message("Register user submission")
+        input$user_word_to_translate
       }
     })
 
     # Display the word to the user
     output$word_display <- renderUI({
-      random_word()
+      message("Show word to translate")
+      word_to_translate()
     })
 
     # Provide feedback on the user's guess
     observeEvent(input$submit, {
-      real_translation <- vocab_data()[vocab_data()[, input$language] == random_word(), "FR"]
+
+      real_translation <- vocab_data()[vocab_data()[, input$language] == word_to_translate(), "FR"]
       if (input$guess == real_translation) {
+        message("Correct submission")
         output$feedback <- renderText({"Correct!"})
+
+        # Clear text input
+        updateTextInput(session, "guess", value = "")
+
       } else {
         output$feedback <- renderText({
+          message("Incorrect submission")
           paste0("Incorrect. The actaul translation is ", real_translation)
           })
       }
+
+
     })
   })
 }
