@@ -17,14 +17,7 @@ mod_vocab_ui <- function(id){
     textInput(ns("guess"), "Your Guess:"),
     actionButton(ns("submit"), "Submit"),
     textOutput(ns("feedback")),
-    tags$script(HTML(
-      paste0("
-  $(document).on('keypress', function(e) {
-    if(e.which == 13) {
-      $('#", ns("submit"), "').click();
-    }
-  });")
-    ))
+    tags$script(HTML(submit_on_enter(btn_id = ns("submit"))))
   )
 }
 
