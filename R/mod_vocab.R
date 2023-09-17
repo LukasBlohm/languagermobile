@@ -16,7 +16,15 @@ mod_vocab_ui <- function(id){
     uiOutput(ns("word_display")),
     textInput(ns("guess"), "Your Guess:"),
     actionButton(ns("submit"), "Submit"),
-    textOutput(ns("feedback"))
+    textOutput(ns("feedback")),
+    tags$script(HTML(
+      paste0("
+  $(document).on('keypress', function(e) {
+    if(e.which == 13) {
+      $('#", ns("submit"), "').click();
+    }
+  });")
+    ))
   )
 }
 
@@ -52,7 +60,9 @@ mod_vocab_server <- function(id){
       if (input$guess == real_translation) {
         output$feedback <- renderText({"Correct!"})
       } else {
-        output$feedback <- renderText({"Incorrect. Keep practicing!"})
+        output$feedback <- renderText({
+          paste0("Incorrect. The actaul translation is ", real_translation)
+          })
       }
     })
   })
