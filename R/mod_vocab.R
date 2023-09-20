@@ -29,7 +29,7 @@ mod_vocab_ui <- function(id){
     textInput(ns("guess"), "Your Guess:"),
     actionButton(ns("submit"), "Submit"),
 
-    actionButton(ns("btn_next"), "Next"),
+    # actionButton(ns("btn_next"), "Next"),
     textOutput(ns("feedback")),
     tags$script(HTML(submit_on_enter(btn_id = ns("submit"))))
   )
@@ -74,7 +74,16 @@ mod_vocab_server <- function(id){
     })
 
     # Randomly sample or let the user choose a word
-    word_to_translate <- eventReactive(input$btn_get_word, {
+    # word_to_translate <- eventReactive(input$btn_get_word, {
+    #   if (input$word_source == "Random") {
+    #     message("Sample a random word")
+    #     sample(vocab_data()[, input$language], 1)
+    #   } else {
+    #     message("Register user submission")
+    #     input$user_word_to_translate
+    #   }
+    # })
+    word_to_translate <- reactive({
       if (input$word_source == "Random") {
         message("Sample a random word")
         sample(vocab_data()[, input$language], 1)
