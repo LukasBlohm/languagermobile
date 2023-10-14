@@ -16,6 +16,10 @@ app_ui <- function(request) {
         tabPanel(
           title = "Vocab",
           mod_vocab_ui("vocab_module")
+        ),
+        tabPanel(
+          title = "Idioms",
+          mod_idiom_ui("idiom_module")
         )
       )
     )

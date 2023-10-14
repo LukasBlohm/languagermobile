@@ -5,6 +5,7 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  # Your application server logic
+
   mod_vocab_server("vocab_module")
+  mod_idiom_server("idiom_module")
 }

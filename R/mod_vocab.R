@@ -83,7 +83,7 @@ mod_vocab_server <- function(id){
     #     input$user_word_to_translate
     #   }
     # })
-    word_to_translate <- reactive({
+    word_to_translate <- eventReactive(input$btn_get_word, {
       if (input$word_source == "Random") {
         message("Sample a random word")
         sample(vocab_data()[, input$language], 1)
