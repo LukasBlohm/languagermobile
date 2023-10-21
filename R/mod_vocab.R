@@ -11,27 +11,33 @@ mod_vocab_ui <- function(id){
   ns <- NS(id)
 
   tagList(
-    selectInput(ns("language"), "Choose Language:", choices = c("EN", "FR")),
-    radioButtons(ns("word_source"), "Word Source:",
-                 choices = c("Random", "User Choice"),
-                 selected = "Random"),
-    conditionalPanel(
-      condition = "output.user_word",
-      ns = ns,
-      textInput(ns("user_word_to_translate"), "Enter word:")
+    sidebarLayout(
+      sidebarPanel(
+        selectInput(ns("language"), "Choose Language:", choices = c("EN", "FR")),
+        radioButtons(ns("word_source"), "Word Source:",
+                     choices = c("Random", "User Choice"),
+                     selected = "Random"),
+        conditionalPanel(
+          condition = "output.user_word",
+          ns = ns,
+          textInput(ns("user_word_to_translate"), "Enter word:")
+        ),
+        conditionalPanel(
+          condition = "!output.user_word",
+          ns = ns,
+          actionButton(ns("btn_get_word"), "Sample a word")
+        ),
+        textInput(ns("guess"), "Your Guess:"),
+        actionButton(ns("submit"), "Submit"),
+        tags$script(HTML(submit_on_enter(btn_id = ns("submit")))),
       ),
-    conditionalPanel(
-      condition = "!output.user_word",
-      ns = ns,
-      actionButton(ns("btn_get_word"), "Sample a word")
-    ),
-    uiOutput(ns("word_display")),
-    textInput(ns("guess"), "Your Guess:"),
-    actionButton(ns("submit"), "Submit"),
+      mainPanel(
+        uiOutput(ns("word_display")),
 
-    # actionButton(ns("btn_next"), "Next"),
-    textOutput(ns("feedback")),
-    tags$script(HTML(submit_on_enter(btn_id = ns("submit"))))
+        # actionButton(ns("btn_next"), "Next"),
+        textOutput(ns("feedback"))
+      )
+      )
   )
 }
 
