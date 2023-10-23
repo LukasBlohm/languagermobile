@@ -18,6 +18,10 @@ app_ui <- function(request) {
           mod_vocab_ui("vocab_module")
         ),
         tabPanel(
+          title = "Argot",
+          mod_argot_ui("argot_module")
+        ),
+        tabPanel(
           title = "Idioms",
           mod_idiom_ui("idiom_module")
         ),

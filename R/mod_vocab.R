@@ -33,9 +33,7 @@ mod_vocab_ui <- function(id){
       ),
       mainPanel(
         uiOutput(ns("word_display")),
-
-        # actionButton(ns("btn_next"), "Next"),
-        textOutput(ns("feedback"))
+        uiOutput(ns("feedback"))
       )
       )
   )
