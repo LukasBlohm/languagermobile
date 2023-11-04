@@ -11,13 +11,32 @@ mod_sentence_ui <- function(id){
   ns <- NS(id)
 
   tagList(
-    selectInput(ns("language_1"),
-                "Choose Language:",
-                choices = c("EN", "FR"),
-                selected = "FR"),
+    br(),
+    fluidRow(
+      column(width = 4,
+             selectInput(ns("language_1"),
+                         "Choose Language:",
+                         choices = c("EN", "FR"),
+                         selected = "FR")
+      ),
+      column(width = 4,
+             selectInput(ns("dataset"),
+                         "Choose Dataset:",
+                         choices = c("sentences", "idiom"),
+                         selected = "sentences")
+             )
+      ),
 
-    actionButton(ns("btn_load"), "Show new sentence"),
-    actionButton(ns("btn_show_result"), "Show translation"),
+    br(),
+
+    fluidRow(
+      column(width = 4,
+             actionButton(ns("btn_load"), "Show new sentence")
+      ),
+      column(width = 4,
+             actionButton(ns("btn_show_result"), "Show translation")
+      )
+    ),
 
     # textOutput(ns("feedback")),
     tags$script(HTML(submit_on_enter(btn_id = ns("btn_show_result")))),
@@ -41,8 +60,17 @@ mod_sentence_server <- function(id){
     ns <- session$ns
 
     # Read the sentence data
-    df_sentences <- reactive({
-      read.csv("sentences.csv")
+    df_sentences_base <- read.csv("sentences.csv")
+    df_idioms <- read.csv("idioms.csv")
+
+    df_active <- reactiveVal(data.frame())
+
+    observe({
+      if (input$dataset == "sentences") {
+        df_active(df_sentences_base)
+      } else if (input$dataset == "idioms") {
+        df_active(df_idioms)
+      }
     })
 
     list_reactives <- reactiveValues(
@@ -68,9 +96,9 @@ mod_sentence_server <- function(id){
 
     sentence_to_translate <- eventReactive(input$btn_load, {
       message("Sample a random sentence")
-      # print(df_sentences()[, input$language_1])
+      # print(df_active()[, input$language_1])
       list_reactives$show_translation <- FALSE
-      sample(x = df_sentences()[, input$language_1], size = 1)
+      sample(x = df_active()[, input$language_1], size = 1)
     })
 
     # Display the sentence to the user
@@ -91,7 +119,7 @@ mod_sentence_server <- function(id){
 
       if (list_reactives$show_translation) {
         message("Show translation")
-        tr <- df_sentences()[df_sentences()[[input$language_1]] == sentence_to_translate(),
+        tr <- df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
                               list_reactives$other_language]
 
         message("Translation: “", tr)
