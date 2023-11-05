@@ -116,7 +116,7 @@ mod_sentence_server <- function(id){
       if (list_reactives$show_translation) {
         message("Show translation")
         sentence_translated <- df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
-                          list_reactives$other_language]
+                                           list_reactives$other_language]
 
         message("Translation: ", sentence_translated)
         output$table <- renderTable({
