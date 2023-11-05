@@ -42,12 +42,9 @@ mod_sentence_ui <- function(id){
     tags$script(HTML(submit_on_enter(btn_id = ns("btn_show_result")))),
     tags$script(HTML(submit_on_enter(btn_id = ns("btn_load")))),
 
-
     br(),
     br(),
-    uiOutput(ns("sentence_language1")),
-    br(),
-    uiOutput(ns("sentence_language2")),
+    tableOutput(ns("table")),
 
   )
 }
@@ -64,6 +61,7 @@ mod_sentence_server <- function(id){
     df_idioms <- read.csv("idioms.csv")
 
     df_active <- reactiveVal(data.frame())
+    sentence_to_translate <- reactiveVal("")
 
     observe({
       if (input$dataset == "sentences") {
@@ -89,44 +87,54 @@ mod_sentence_server <- function(id){
       }
     })
 
-    # observe({
-    #   message("sentence_to_translate: ")
-    #   print(sentence_to_translate())
+    # sentence_to_translate <- eventReactive(input$btn_load, {
+    #   message("Sample a random sentence")
+    #   # print(df_active()[, input$language_1])
+    #   list_reactives$show_translation <- FALSE
+    #   sample(x = df_active()[, input$language_1], size = 1)
     # })
 
-    sentence_to_translate <- eventReactive(input$btn_load, {
+    observeEvent(input$btn_load, {
       message("Sample a random sentence")
-      # print(df_active()[, input$language_1])
       list_reactives$show_translation <- FALSE
-      sample(x = df_active()[, input$language_1], size = 1)
-    })
-
-    # Display the sentence to the user
-    output$sentence_language1 <- renderUI({
-      # message("btn_show_result sentence to translate")
-      sentence_to_translate()
+      sentence_to_translate(
+        sample(x = df_active()[, input$language_1], size = 1)
+        )
     })
 
     observeEvent(input$btn_show_result, {
       list_reactives$show_translation <- TRUE
     })
 
+    observeEvent(input$language_1, {
+      list_reactives$show_translation <- FALSE
+      sentence_to_translate("")
+    })
 
-    # Show the translation
+
     observe({
-
-      # print(paste0("list_reactives$show_translation: ", list_reactives$show_translation))
-
       if (list_reactives$show_translation) {
         message("Show translation")
-        tr <- df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
-                              list_reactives$other_language]
+        sentence_translated <- df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
+                          list_reactives$other_language]
 
-        message("Translation: “", tr)
-        output$sentence_language2 <- renderText({tr})
+        message("Translation: ", sentence_translated)
+        output$table <- renderTable({
+          req(sentence_to_translate())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
+          print(paste0("sentence to translate:", sentence_to_translate()))
+          print(paste0("translation:", sentence_translated))
+          data.frame(Original = sentence_to_translate(),
+                     Translation = sentence_translated)
+        },
+        width = "60%", align = "c")
       } else {
         message("Hide translation")
-        output$sentence_language2 <- renderText({""})
+        output$table <- renderTable({
+          print(paste0("sentence to translate:", sentence_to_translate()))
+          data.frame(Original = sentence_to_translate(),
+                     Translation = "")
+        },
+        width = "60%", align = "c")
       }
     })
   })
