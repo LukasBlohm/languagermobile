@@ -57,8 +57,8 @@ mod_sentence_server <- function(id){
     ns <- session$ns
 
     # Read the sentence data
-    df_sentences_base <- read.csv("sentences.csv")
-    df_idioms <- read.csv("idioms.csv")
+    df_sentences_base <- read.csv("data_inputs/sentences.csv")
+    df_idioms <- read.csv("data_inputs/idioms.csv")
 
     df_active <- reactiveVal(data.frame())
     sentence_to_translate <- reactiveVal("")

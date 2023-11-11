@@ -49,7 +49,7 @@ mod_vocab_server <- function(id){
 
     # Read the vocab data
     vocab_data <- reactive({
-      read.csv("vocab_1000.csv")
+      read.csv("data_inputs/vocab_1000.csv")
     })
 
     list_reactives <- reactiveValues(
@@ -91,42 +91,12 @@ mod_vocab_server <- function(id){
       print(word_to_translate())
     })
 
-    # word_to_translate <- eventReactive(input$btn_get_word_to_translate, {
-    #   if (input$word_source == "Random") {
-    #     message("Sample a random word")
-    #     sample(vocab_data()[, input$language], 1)
-    #   } else {
-    #     message("Register user submission")
-    #     input$user_word_to_translate
-    #   }
-    # })
-
     observeEvent(input$btn_get_word_to_translate, {
       message("Sample a random word")
-      # list_reactives$show_translation <- FALSE
       word_to_translate(
         sample(vocab_data()[, input$language_1], 1)
       )
-        # if (input$word_source == "Random") {
-        #   message("Sample a random word")
-        #   # list_reactives$show_translation <- FALSE
-        #   word_to_translate(
-        #     sample(vocab_data()[, input$language_1], 1)
-        #   )
-        # } else {
-        #   message("Register user submission")
-        #   # list_reactives$show_translation <- FALSE
-        #   word_to_translate(
-        #     input$user_word_to_translate
-        #   )
-        # }
     })
-
-    # Display the word to the user
-    # output$word_display <- renderUI({
-    #   message("Show word to translate")
-    #   word_to_translate()
-    # })
 
     output$word_display <- renderTable({
       message("Show word to translate")

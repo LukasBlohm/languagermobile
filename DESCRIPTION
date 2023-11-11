@@ -1,17 +1,27 @@
 Package: languager
-Title: An Amazing Shiny App
+Title: Shiny App to learn languages
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "firstname",
-           family = "lastname",
+    person(given = "Lukas",
+           family = "Blohm",
            role = c("aut", "cre"),
-           email = "your@email.com")
-Description: What the package does (one paragraph).
-License: What license is it under?
+           email = "l.blohm98@gmail.com")
+Description: ...
+License: ...
 Imports: 
     config (>= 0.3.1),
+    dplyr (>= 1.1.0), 
+    forcats (>= 1.0.0),
     golem (>= 0.4.0),
-    shiny (>= 1.7.4)
+    lubridate (>= 1.9.2),
+    magrittr (>= 2.0.3),
+    purrr (>= 1.0.1),
+    reticulate (>= 1.30),
+    rlang (>= 1.1.1), 
+    shiny (>= 1.7.4),
+    stringr (>= 1.5.0),
+    tibble (>= 3.1.8),
+    tidyr (>= 1.3.0)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1

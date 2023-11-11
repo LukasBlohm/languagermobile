@@ -12,18 +12,24 @@ app_ui <- function(request) {
     fluidPage(
       theme = bslib::bs_theme(bootswatch = "darkly"),
       # h1("languager")
+
+
       tabsetPanel(
+        tabPanel(
+          title = "Explorer",
+          mod_explore_ui("explore_module")
+        ),
         tabPanel(
           title = "Vocab",
           mod_vocab_ui("vocab_module")
         ),
         tabPanel(
-          title = "Argot",
-          mod_argot_ui("argot_module")
-        ),
-        tabPanel(
           title = "Sentences",
           mod_sentence_ui("sentence_module")
+        ),
+        tabPanel(
+          title = "Translator",
+          mod_translate_ui("translate_module")
         )
       )
     )
@@ -31,7 +37,8 @@ app_ui <- function(request) {
 }
 
 
-#' Add external Resources to the Application
+
+        #' Add external Resources to the Application
 #'
 #' This function is internally used to add external
 #' resources inside the Shiny application.

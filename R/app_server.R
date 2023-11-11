@@ -6,7 +6,8 @@
 #' @noRd
 app_server <- function(input, output, session) {
 
+  mod_explore_server("explore_module")
   mod_vocab_server("vocab_module")
-  mod_argot_server("argot_module")
   mod_sentence_server("sentence_module")
+  mod_translate_server("translate_module")
 }

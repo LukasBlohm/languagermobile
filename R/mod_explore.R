@@ -12,11 +12,10 @@ mod_explore_ui <- function(id){
 
   tagList(
 
-    br(),
-    br(),
+    tags$script('$(document).ready(function() { $("#someInput").focus(); });'),
 
     selectInput(ns("language_1"),
-                "Choose Language",
+                "Choose Language:",
                 choices = c("EN", "FR"),
                 selected = "FR"),
 
@@ -25,7 +24,6 @@ mod_explore_ui <- function(id){
 
     # textOutput(ns("feedback")),
     tags$script(HTML(submit_on_enter(btn_id = ns("btn_show_result")))),
-    tags$script(HTML(submit_on_enter(btn_id = ns("btn_load")))),
 
 
     br(),
@@ -37,6 +35,9 @@ mod_explore_ui <- function(id){
     uiOutput(ns("example_language1")),
     br(),
     uiOutput(ns("example_language2")),
+
+    # bind_keys_to_buttons(c(13, 39), c("btn_show_result", "btn_load"))
+
 
   )
 }
