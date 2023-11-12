@@ -13,8 +13,9 @@ app_ui <- function(request) {
       theme = bslib::bs_theme(bootswatch = "darkly"),
       # h1("languager")
 
-
       tabsetPanel(
+        id = "tabs",  # Set ID for conditional module loading
+
         tabPanel(
           title = "Explorer",
           mod_explore_ui("explore_module")
@@ -23,10 +24,6 @@ app_ui <- function(request) {
           title = "Vocab",
           mod_vocab_ui("vocab_module")
         ),
-        # tabPanel(
-        #   title = "Sentences",
-        #   mod_sentence_ui("sentence_module")
-        # ),
         tabPanel(
           title = "Translator",
           mod_translate_ui("translate_module")

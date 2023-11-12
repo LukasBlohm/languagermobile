@@ -13,21 +13,22 @@ mod_vocab_ui <- function(id){
   tagList(
     sidebarLayout(
       sidebarPanel(
-        selectInput(ns("language_1"), "Choose Language:", choices = c("EN", "FR")),
+        selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
         radioButtons(ns("word_source"), "Word Source:",
                      choices = c("Random", "User Choice"),
                      selected = "Random"),
         conditionalPanel(
           condition = "output.user_word",
           ns = ns,
-          textInput(ns("user_word_to_translate"), "Enter word:")
+          textInput(ns("user_word_to_translate"), "Enter word")
         ),
         conditionalPanel(
           condition = "!output.user_word",
           ns = ns,
           actionButton(ns("btn_get_word_to_translate"), "Sample a word")
         ),
-        textInput(ns("guess"), "Your Guess:"),
+        br(),
+        textInput(ns("guess"), "Your Guess"),
         actionButton(ns("submit"), "Submit"),
         tags$script(HTML(submit_on_enter(btn_id = ns("submit")))),
       ),
@@ -86,10 +87,9 @@ mod_vocab_server <- function(id){
       }
     })
 
-    observe({
-      message("word_to_translate: ")
-      print(word_to_translate())
-    })
+    # observe({
+    #   message("Word to translate: ", word_to_translate())
+    # })
 
     observeEvent(input$btn_get_word_to_translate, {
       message("Sample a random word")
@@ -99,7 +99,7 @@ mod_vocab_server <- function(id){
     })
 
     output$word_display <- renderTable({
-      message("Show word to translate")
+      # message("Show word to translate")
       data.frame(Word = word_to_translate())
     }, width = "60%")
 

@@ -36,14 +36,6 @@ mod_explore_ui <- function(id){
       )
     ),
 
-    # fluidRow(
-    #   column(width = 4,
-    #          selectInput(ns("dataset"),
-    #                      "Choose Dataset:",
-    #                      choices = NULL,
-    #                      selected = NULL))
-    # ),
-
     br(),
 
     fluidRow(
@@ -74,7 +66,7 @@ mod_explore_server <- function(id){
     ns <- session$ns
 
     df_active <- reactiveVal(tibble::tibble())
-    sentence_to_translate <- reactiveVal("")
+    expression_original <- reactiveVal("")
 
     shiny::updateSelectInput(
       session = session,
@@ -104,43 +96,25 @@ mod_explore_server <- function(id){
       )
     })
 
-
-
     observe({
-
       req(paste0("df_", input$dataset))
+      message(short_separator)
+      message("Activate dataset ", input$dataset)
       df_active(.GlobalEnv[[paste0("df_", input$dataset)]])
     })
 
     list_reactives <- reactiveValues(
-      other_language = "EN",
       show_translation = FALSE
     )
 
-    # observe({
-    #   list_reactives$other_language <- input$language_2
-    # })
-
-    # observe({
-    #   # print(input$language_1)
-    #   if (input$language_1 == "FR") {
-    #     message("Language 1 set to FR, language 2 set to EN")
-    #     list_reactives$other_language <- "EN"
-    #   } else {
-    #     message("Language 1 set to EN, language 2 set to FR")
-    #     list_reactives$other_language <- "FR"
-    #   }
-    # })
-
-
     observeEvent(input$btn_load, {
-      message("Sample a random sentence")
+      message("Sample an expression")
       list_reactives$show_translation <- FALSE
 
-      print("head(df_active())")
-      print(head(df_active()))
+      # print("head(df_active())")
+      # print(head(df_active()))
 
-      try(sentence_to_translate(
+      try(expression_original(
         sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
       ))
     })
@@ -151,43 +125,44 @@ mod_explore_server <- function(id){
 
     observeEvent(input$language_1, {
       list_reactives$show_translation <- FALSE
-      sentence_to_translate("")
+      expression_original("")
     })
 
     observeEvent(input$dataset, {
       list_reactives$show_translation <- FALSE
-      sentence_to_translate("")
+      expression_original("")
     })
 
     observe({
       if (list_reactives$show_translation) {
         message("Show translation")
         try(
-          sentence_translated <-
-            df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
-                        # list_reactives$other_language
+          expression_translated <-
+            df_active()[df_active()[[input$language_1]] == expression_original(),
                         input$language_2]
         )
 
-        try(message("Translation: ", sentence_translated))
-
         try(
           output$table <- renderTable({
-            req(sentence_to_translate())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
-            print(paste0("sentence to translate:", sentence_to_translate()))
-            print(paste0("translation:", sentence_translated))
-            data.frame(Original = sentence_to_translate(),
-                       Translation = sentence_translated)
+            req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
+
+            message("Original expression: ", expression_original())
+            message("Translation: ", expression_translated)
+
+            data.frame(Original = expression_original(),
+                       Translation = expression_translated)
           }, width = "60%", align = "c")
         )
       } else {
         message("Hide translation")
         output$table <- renderTable({
-          print(paste0("sentence to translate:", sentence_to_translate()))
-          data.frame(Original = sentence_to_translate(),
+
+          message("Original expression: ", expression_original())
+
+          data.frame(Original = expression_original(),
                      Translation = "")
         },
-        width = "60%", align = "c")
+        width = "100%", align = "c")
       }
     })
   })
