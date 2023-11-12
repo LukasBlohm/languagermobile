@@ -13,31 +13,42 @@ mod_explore_ui <- function(id){
   tagList(
     br(),
     fluidRow(
-      column(width = 4,
-             selectInput(ns("language_1"),
-                         "Choose Language:",
+      column(width = 3,
+             selectInput(ns("dataset"),
+                         "Dataset",
                          choices = NULL,
                          selected = NULL
-                         # choices = c("EN", "FR"),
-                         # selected = "FR"
+                         )
+             ),
+      column(width = 3,
+             selectInput(ns("language_1"),
+                         "Original Language",
+                         choices = NULL,
+                         selected = NULL
              )
       ),
-      column(width = 4,
-             selectInput(ns("dataset"),
-                         "Choose Dataset:",
+      column(width = 3,
+             selectInput(ns("language_2"),
+                         "Translation",
                          choices = NULL,
                          selected = NULL
-                         # choices = c("sentences", "idioms"),
-                         # selected = "sentences"
              )
       )
     ),
+
+    # fluidRow(
+    #   column(width = 4,
+    #          selectInput(ns("dataset"),
+    #                      "Choose Dataset:",
+    #                      choices = NULL,
+    #                      selected = NULL))
+    # ),
 
     br(),
 
     fluidRow(
       column(width = 4,
-             actionButton(ns("btn_load"), "Show new sentence")
+             actionButton(ns("btn_load"), "Sample new expression")
       ),
       column(width = 4,
              actionButton(ns("btn_show_result"), "Show translation")
@@ -76,8 +87,20 @@ mod_explore_server <- function(id){
         session = session,
         "language_1",
         choices = get_languages(input),
-        # choices = l_colnames[[paste0("df_", input$dataset)]][stringr::str_detect(l_colnames[[paste0("df_", input$dataset)]], "^FR|^EN|^DE")],
         selected = "FR"
+      )
+    })
+
+    observe({
+
+      languages <- get_languages(input)
+      other_options <- languages[languages != input$language_1]
+
+      shiny::updateSelectInput(
+        session = session,
+        "language_2",
+        choices = other_options,
+        selected = other_options[1]
       )
     })
 
@@ -94,16 +117,20 @@ mod_explore_server <- function(id){
       show_translation = FALSE
     )
 
-    observe({
-      # print(input$language_1)
-      if (input$language_1 == "FR") {
-        message("Language 1 set to FR, language 2 set to EN")
-        list_reactives$other_language <- "EN"
-      } else {
-        message("Language 1 set to EN, language 2 set to FR")
-        list_reactives$other_language <- "FR"
-      }
-    })
+    # observe({
+    #   list_reactives$other_language <- input$language_2
+    # })
+
+    # observe({
+    #   # print(input$language_1)
+    #   if (input$language_1 == "FR") {
+    #     message("Language 1 set to FR, language 2 set to EN")
+    #     list_reactives$other_language <- "EN"
+    #   } else {
+    #     message("Language 1 set to EN, language 2 set to FR")
+    #     list_reactives$other_language <- "FR"
+    #   }
+    # })
 
 
     observeEvent(input$btn_load, {
@@ -127,6 +154,10 @@ mod_explore_server <- function(id){
       sentence_to_translate("")
     })
 
+    observeEvent(input$dataset, {
+      list_reactives$show_translation <- FALSE
+      sentence_to_translate("")
+    })
 
     observe({
       if (list_reactives$show_translation) {
@@ -134,7 +165,8 @@ mod_explore_server <- function(id){
         try(
           sentence_translated <-
             df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
-                        list_reactives$other_language]
+                        # list_reactives$other_language
+                        input$language_2]
         )
 
         try(message("Translation: ", sentence_translated))
