@@ -2,22 +2,17 @@
 
 #' Load dependencies for an individual model
 #'
-#' @param model_path Path to the model. If null, the remote is used.
-#' @param language_pair
-#' @param transformers
-#'
-#' @noRd
+#' @param language_pair String, specifying the pair of languages to be
+#' translated. E.g. `"de-fr"`
+#' @param transformers The transformers module
+#' @param model_path Path to the model. If null, the default cache folder
+#' (e.g. `~/.cache/huggingface/hub/`) is used.
 #'
 #' @return A list containing the model and tokenizer for one language pair
 #'
 #' @examples
-load_dependencies <- function(model_path, language_pair = "fr-de", transformers) {
-
-  # .python_modules$transformers <- reticulate::import("transformers")
-  #
-  # transformers <- .python_modules$transformers
-
-  # language_pair <- paste0(language_in, "-", language_out)
+#' \dontrun{load_dependencies(language_pair = "fr-de", transformers = .python_modules$transformers)}
+load_dependencies <- function(language_pair = "fr-de", transformers, model_path = NULL) {
 
   if (!is.null(model_path)) {
     tokenizer <- transformers$MarianTokenizer$from_pretrained(
@@ -45,18 +40,18 @@ load_dependencies <- function(model_path, language_pair = "fr-de", transformers)
 
 #' Setup_translator
 #'
-#' @param model_path
-#' @param language_in
-#' @param language_out
+#' @param language_pairs Character vector, specifying the pairs of languages to be
+#' translated. E.g. `"de-fr"` or `c("de-fr", "en-fr")`
+#' @param model_path Path to the model. If null, the default cache folder
+#' (e.g. `~/.cache/huggingface/hub/`) is used.
 #'
 #' @importFrom magrittr %>%
-#'
-#' @noRd
 #'
 #' @return A list containing the model and tokenizer for the language pairs
 #'
 #' @examples
-setup_translator <- function(language_pairs = "fr-de", model_path = NULL) {
+#' \dontrun{setup_translator()}
+setup_translator <- function(language_pairs = "de-fr", model_path = NULL) {
 
   .python_modules$transformers <- reticulate::import("transformers")
 
@@ -74,20 +69,20 @@ setup_translator <- function(language_pairs = "fr-de", model_path = NULL) {
 
 #' Translate
 #'
-#' @param dependencies
-#' @param language_pair
-#' @param input_text
-#' @param character_cut
-#' @param verbose
+#' @param input_text String of the text to be translated
+#' @param dependencies Object storing the model and tokenizer for `language_pair.`.
+#'  Output of [setup_translator()]
+#' @param language_pair String, specifying the pair of languages to be translated.
+#'  E.g. `"de-fr"`
+#' @param verbose Logical, should messages be printed to the console?
 #'
 #' @importFrom magrittr %>%
-#'
-#' @noRd
 #'
 #' @return The translation of input_text
 #'
 #' @examples
-translate <- function(dependencies, language_pair, input_text, character_cut = 1200, verbose = TRUE) {
+#' \dontrun{translate(input_text = "Haus", dependencies = deps, language_pair = "de-fr")}
+translate <- function(input_text, dependencies, language_pair, verbose = TRUE) {
   tokenizer <- dependencies[[language_pair]][["tokenizer"]]
   model <- dependencies[[language_pair]][["model"]]
 
@@ -98,7 +93,7 @@ translate <- function(dependencies, language_pair, input_text, character_cut = 1
   if (!is.na(input_text) & n_characters > 0) {
     input_tokens <- tokenizer$encode(input_text, return_tensors = "pt")
 
-    if (n_characters < character_cut) {
+    if (n_characters < 1200) {
       input_tokens <- tokenizer$encode(input_text, return_tensors = "pt")
 
       outputs <- model$generate(input_tokens, max_new_tokens = 500)

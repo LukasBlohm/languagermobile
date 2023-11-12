@@ -1,13 +1,13 @@
 Package: languager
 Title: Shiny App to learn languages
-Version: 0.0.0.9000
+Version: 0.1
 Authors@R: 
     person(given = "Lukas",
            family = "Blohm",
            role = c("aut", "cre"),
            email = "l.blohm98@gmail.com")
-Description: ...
-License: ...
+Description: Project to combine practicing Shiny as well as human languages. 
+License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
     dplyr (>= 1.1.0), 

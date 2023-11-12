@@ -72,8 +72,7 @@ mod_translate_server <- function(id){
         dependencies = dependencies,
         language_pair = paste0(tolower(input$language_1), "-",
                                tolower(input$language_2)),
-        input_text = input$text_to_translate,
-        character_cut = 1200, verbose = TRUE)},
+        input_text = input$text_to_translate, verbose = TRUE)},
       ignoreInit = TRUE)
 
 
