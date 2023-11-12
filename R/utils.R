@@ -34,5 +34,47 @@ load_datasets <- function(file_name) {
 
 
 
+#' Generate_df_ui_labels
+#'
+#' Looks for data frames in .GlobalEnv (which start with df_) and creates
+#' labels for the UI accordingly
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A character vector of the labels
+#'
+#' @noRd
+generate_df_ui_labels <- function() {
+  stringr::str_remove(
+    names(.GlobalEnv)[stringr::str_starts(
+      names(.GlobalEnv), pattern = stringr::fixed("df_")
+  )], "df_")
+}
+
+
+#' Get languages
+#'
+#' @param input
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A character vector of names of columns that correspond to a language
+#'
+#' @noRd
+get_languages <- function(input) {
+
+  df <- .GlobalEnv$l_colnames[[paste0("df_", input$dataset)]]
+
+  df[stringr::str_detect(df, "^FR|^EN|^DE")]
+}
+
+
+
+
+
+
+
+
+
 
 

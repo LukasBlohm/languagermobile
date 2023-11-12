@@ -1,4 +1,4 @@
-#' explore UI Function
+#' sentence UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_explore_ui <- function(id){
+mod_sentence_ui <- function(id){
   ns <- NS(id)
 
   tagList(
@@ -16,20 +16,14 @@ mod_explore_ui <- function(id){
       column(width = 4,
              selectInput(ns("language_1"),
                          "Choose Language:",
-                         choices = NULL,
-                         selected = NULL
-                         # choices = c("EN", "FR"),
-                         # selected = "FR"
-             )
+                         choices = c("EN", "FR"),
+                         selected = "FR")
       ),
       column(width = 4,
              selectInput(ns("dataset"),
                          "Choose Dataset:",
-                         choices = NULL,
-                         selected = NULL
-                         # choices = c("sentences", "idioms"),
-                         # selected = "sentences"
-             )
+                         choices = c("sentences", "idiom"),
+                         selected = "sentences")
       )
     ),
 
@@ -55,38 +49,26 @@ mod_explore_ui <- function(id){
   )
 }
 
-#' explore Server Functions
+#' sentence Server Functions
 #'
 #' @noRd
-mod_explore_server <- function(id){
+mod_sentence_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    df_active <- reactiveVal(tibble::tibble())
+    # Read the sentence data
+    df_sentences_base <- read.csv("data_inputs/sentences.csv")
+    df_idioms <- read.csv("data_inputs/idioms.csv")
+
+    df_active <- reactiveVal(data.frame())
     sentence_to_translate <- reactiveVal("")
 
-    shiny::updateSelectInput(
-      session = session,
-      "dataset",
-      choices = generate_df_ui_labels()
-    )
-
     observe({
-      shiny::updateSelectInput(
-        session = session,
-        "language_1",
-        choices = get_languages(input),
-        # choices = l_colnames[[paste0("df_", input$dataset)]][stringr::str_detect(l_colnames[[paste0("df_", input$dataset)]], "^FR|^EN|^DE")],
-        selected = "FR"
-      )
-    })
-
-
-
-    observe({
-
-      req(paste0("df_", input$dataset))
-      df_active(.GlobalEnv[[paste0("df_", input$dataset)]])
+      if (input$dataset == "sentences") {
+        df_active(df_sentences_base)
+      } else if (input$dataset == "idioms") {
+        df_active(df_idioms)
+      }
     })
 
     list_reactives <- reactiveValues(
@@ -105,17 +87,19 @@ mod_explore_server <- function(id){
       }
     })
 
+    # sentence_to_translate <- eventReactive(input$btn_load, {
+    #   message("Sample a random sentence")
+    #   # print(df_active()[, input$language_1])
+    #   list_reactives$show_translation <- FALSE
+    #   sample(x = df_active()[, input$language_1], size = 1)
+    # })
 
     observeEvent(input$btn_load, {
       message("Sample a random sentence")
       list_reactives$show_translation <- FALSE
-
-      print("head(df_active())")
-      print(head(df_active()))
-
-      try(sentence_to_translate(
-        sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
-      ))
+      sentence_to_translate(
+        sample(x = df_active()[, input$language_1], size = 1)
+      )
     })
 
     observeEvent(input$btn_show_result, {
@@ -131,23 +115,18 @@ mod_explore_server <- function(id){
     observe({
       if (list_reactives$show_translation) {
         message("Show translation")
-        try(
-          sentence_translated <-
-            df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
-                        list_reactives$other_language]
-        )
+        sentence_translated <- df_active()[df_active()[[input$language_1]] == sentence_to_translate(),
+                                           list_reactives$other_language]
 
-        try(message("Translation: ", sentence_translated))
-
-        try(
-          output$table <- renderTable({
-            req(sentence_to_translate())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
-            print(paste0("sentence to translate:", sentence_to_translate()))
-            print(paste0("translation:", sentence_translated))
-            data.frame(Original = sentence_to_translate(),
-                       Translation = sentence_translated)
-          }, width = "60%", align = "c")
-        )
+        message("Translation: ", sentence_translated)
+        output$table <- renderTable({
+          req(sentence_to_translate())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
+          print(paste0("sentence to translate:", sentence_to_translate()))
+          print(paste0("translation:", sentence_translated))
+          data.frame(Original = sentence_to_translate(),
+                     Translation = sentence_translated)
+        },
+        width = "60%", align = "c")
       } else {
         message("Hide translation")
         output$table <- renderTable({
