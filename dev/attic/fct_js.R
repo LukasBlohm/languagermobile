@@ -1,19 +1,5 @@
 
 
-#' Submit on enter
-#'
-#' @param button
-#'
-#' @noRd
-submit_on_enter <- function(btn_id) {
-  paste0("
-  $(document).on('keypress', function(e) {
-    if(e.which == 17) {
-      $('#", btn_id, "').click();
-    }
-  });")
-}
-
 bind_keys_to_buttons <- function(keys, btn_ids, ns = identity) {
   js_code <- paste0(
     "$(document).on('keypress', function(e) {",

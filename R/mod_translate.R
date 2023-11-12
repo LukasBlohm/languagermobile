@@ -63,21 +63,6 @@ mod_translate_server <- function(id){
       show_translation = FALSE
     )
 
-    # observe({
-    #   # print(input$language_1)
-    #   if (input$language_1 == "FR") {
-    #     message("Language 1 set to FR, language 2 set to EN")
-    #     list_reactives$other_language <- "EN"
-    #   } else {
-    #     message("Language 1 set to EN, language 2 set to FR")
-    #     list_reactives$other_language <- "FR"
-    #   }
-    # })
-
-
-    # observeEvent(input$btn_translate, {
-    #   list_reactives$show_translation <- TRUE
-    # })
 
     observeEvent(input$btn_translate, {
 
