@@ -6,6 +6,8 @@
 *.pdf
 *.xlsx
 
+.Renviron
+
 dev/
 data_pdf/
 data_raw/
