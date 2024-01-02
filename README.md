@@ -24,7 +24,4 @@ The transformers library automatically checks if the required model and tokenize
 
 -   Make sure to have R, R-Studio and the shiny and golem packages installed.
 -   Clone repository
--   Optional, to use Translate module:
-    -   Make sure to have python and the transformers module (`pip install transformers`) installed. You may want to use a virtual environment for this.
-    -   Create .Renviron file in to root folder of the repository. In this file, set RETICULATE_PYTHON="path", specifying the path to your python installation.
 -   Start the app `golem::run_dev()` in the R console (accept installation of required additional dependencies if prompted to do so).

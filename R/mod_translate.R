@@ -62,7 +62,7 @@ mod_translate_server <- function(id){
       )
 
     dependencies <- setup_translator(
-      model_path = NULL,
+      # model_path = NULL,
       language_pairs = "de-fr"  # Can be expanded to all installed models
       )
 

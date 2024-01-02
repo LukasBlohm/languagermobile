@@ -1,6 +1,6 @@
 Package: languager
 Title: Shiny App to learn languages
-Version: 0.1
+Version: 0.2.0
 Authors@R: 
     person(given = "Lukas",
            family = "Blohm",
@@ -9,6 +9,7 @@ Authors@R:
 Description: Project to combine practicing Shiny as well as human languages. 
 License: MIT + file LICENSE
 Imports: 
+    bslib (>= 0.6.1),
     config (>= 0.3.1),
     dplyr (>= 1.1.0), 
     forcats (>= 1.0.0),
@@ -24,4 +25,4 @@ Imports:
     tidyr (>= 1.3.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

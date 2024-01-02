@@ -1,6 +1,6 @@
 #' Submit on enter
 #'
-#' @param button
+#' @param btn_id
 #'
 #' @noRd
 submit_on_enter <- function(btn_id) {

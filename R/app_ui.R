@@ -5,12 +5,13 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
+
   tagList(
     # Leave this function for adding external resources
     # golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
-      theme = bslib::bs_theme(bootswatch = "darkly"),
+      theme = bslib::bs_theme(version = 5, bootswatch = "slate"),
       # h1("languager")
 
       tabsetPanel(

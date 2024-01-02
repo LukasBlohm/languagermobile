@@ -1,51 +1,15 @@
 .python_modules <- new.env()
 
-#' Load dependencies for an individual model
-#'
-#' @param language_pair String, specifying the pair of languages to be
-#' translated. E.g. `"de-fr"`
-#' @param transformers The transformers module
-#' @param model_path Path to the model. If null, the default cache folder
-#' (e.g. `~/.cache/huggingface/hub/`) is used.
-#'
-#' @return A list containing the model and tokenizer for one language pair
-#'
-#' @examples
-#' \dontrun{load_dependencies(language_pair = "fr-de", transformers = .python_modules$transformers)}
-load_dependencies <- function(language_pair = "fr-de", transformers, model_path = NULL) {
-
-  if (!is.null(model_path)) {
-    tokenizer <- transformers$MarianTokenizer$from_pretrained(
-      file.path(model_path, paste0("model_", language_pair))
-    )
-
-    model <- transformers$MarianMTModel$from_pretrained(
-      file.path(model_path, paste0("model_", language_pair))
-    )
-  } else {
-    tokenizer <- transformers$MarianTokenizer$from_pretrained(
-      paste0("Helsinki-NLP/opus-mt-", language_pair)
-    )
-    model <- transformers$MarianMTModel$from_pretrained(
-      paste0("Helsinki-NLP/opus-mt-", language_pair)
-      )
-  }
-  message("Dependencies for ", language_pair, " loaded.")
-
-  return(list(
-    tokenizer = tokenizer, model = model
-  ))
-}
-
 
 #' Setup_translator
+#'
+#' This function prepares everything that is needed to conduct translations
+#' with the specified language pairs.
 #'
 #' @param language_pairs Character vector, specifying the pairs of languages to be
 #' translated. E.g. `"de-fr"` or `c("de-fr", "en-fr")`
 #' @param model_path Path to the model. If null, the default cache folder
 #' (e.g. `~/.cache/huggingface/hub/`) is used.
-#'
-#' @importFrom magrittr %>%
 #'
 #' @return A list containing the model and tokenizer for the language pairs
 #'
@@ -53,8 +17,13 @@ load_dependencies <- function(language_pair = "fr-de", transformers, model_path 
 #' \dontrun{setup_translator()}
 setup_translator <- function(language_pairs = "de-fr", model_path = NULL) {
 
+  message("Start setup of reticulate-python")
+  setup_virtualenv()
+
+  message("Module import")
   .python_modules$transformers <- reticulate::import("transformers")
 
+  message("Load dependencies")
   dependencies <- purrr::map(
     language_pairs,
     ~ load_dependencies(language_pair = .x, model_path = model_path,
@@ -69,14 +38,14 @@ setup_translator <- function(language_pairs = "de-fr", model_path = NULL) {
 
 #' Translate
 #'
+#' This function translates a particular string.
+#'
 #' @param input_text String of the text to be translated
 #' @param dependencies Object storing the model and tokenizer for `language_pair.`.
 #'  Output of [setup_translator()]
 #' @param language_pair String, specifying the pair of languages to be translated.
 #'  E.g. `"de-fr"`
 #' @param verbose Logical, should messages be printed to the console?
-#'
-#' @importFrom magrittr %>%
 #'
 #' @return The translation of input_text
 #'
