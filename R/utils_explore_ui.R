@@ -38,34 +38,60 @@ explore_ui_bslib <- function(ns) {
       )
     ),
 
+    # htmltools::br(),
+
+    # shiny::fluidRow(
+    #   shiny::column(
+    #     width = 3,
+    #     shiny::checkboxInput(ns("check_autosample"), "Automatic Sampling", value = FALSE)
+    #   ),
+    #   shiny::column(
+    #     width = 3,
+    #     shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
+    #   )
+    # ),
+
     htmltools::br(),
-
-    shiny::fluidRow(
-      shiny::column(
-        width = 3,
-        shiny::checkboxInput(ns("check_autosample"), "Automatic Sampling", value = FALSE)
-      ),
-      shiny::column(
-        width = 3,
-        shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
-      )
-    ),
-
-    htmltools::br(),
-
 
     bslib::card(
       shiny::fluidRow(
         shiny::column(
           width = 6,
-          shiny::actionButton(ns("btn_load"), "Sample new expression")
+          shiny::checkboxInput(ns("check_automode"), "Automatic Mode", value = FALSE)
         ),
         shiny::column(
           width = 6,
-          shiny::actionButton(ns("btn_show_result"), "Show translation")
+          conditionalPanel(
+            condition = "!input.check_automode",
+            ns = ns,
+            shiny::actionButton(ns("btn_load"), "Sample new expression",
+                                style='padding:5px; font-size:90%')
+            )
           )
-        )
-      ),
+      ), height = "70px"
+    ),
+
+    shiny::conditionalPanel(
+      condition = "!input.check_automode",
+      ns = ns,
+      bslib::card(
+        shiny::fluidRow(
+          shiny::column(
+            width = 6,
+            shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
+          ),
+          shiny::column(
+            width = 6,
+            conditionalPanel(
+              condition = "!input.check_autotranslate",
+              ns = ns,
+              shiny::actionButton(ns("btn_show_result"), "Show translation",
+                                  style='padding:5px; font-size:90%')
+            )
+          )
+        ), height = "70px"
+      )
+    ),
 
     # textOutput(ns("feedback")),
     tags$script(htmltools::HTML(submit_on_enter(btn_id = ns("btn_show_result")))),

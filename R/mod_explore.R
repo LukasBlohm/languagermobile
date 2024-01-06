@@ -70,11 +70,10 @@ mod_explore_server <- function(id){
 
     shiny::observe({
 
-      if (input$check_autosample) {
+      if (input$check_automode) {
 
         message("Automatic sample")
 
-        # Set the timer for x milliseconds (1000 milliseconds = 1 second)
         shiny::invalidateLater(1000 * 2, session)
 
         try(expression_original(
@@ -110,7 +109,7 @@ mod_explore_server <- function(id){
     })
 
     shiny::observe({
-      if (list_reactives$show_translation | input$check_autotranslate == 1) {
+      if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
         message("Show translation")
         try(
           expression_translated <-
