@@ -10,9 +10,9 @@
 mod_vocab_ui <- function(id){
   ns <- NS(id)
 
-  tagList(
-    sidebarLayout(
-      sidebarPanel(
+  bslib::page_sidebar(
+
+    sidebar = bslib::sidebar(
         selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
         radioButtons(ns("word_source"), "Word Source:",
                      choices = c("Random", "User Choice"),
@@ -32,12 +32,21 @@ mod_vocab_ui <- function(id){
         actionButton(ns("submit"), "Submit"),
         tags$script(HTML(submit_on_enter(btn_id = ns("submit")))),
       ),
-      mainPanel(
-        # uiOutput(ns("word_display")),
-        tableOutput(ns("word_display")),
-        uiOutput(ns("feedback"))
+      bslib::card(
+        full_screen = TRUE,
+        bslib::card_header("Word"),
+        shiny::tableOutput(ns("word_display"))
+      ),
+      bslib::card(
+        full_screen = TRUE,
+        shiny::uiOutput(ns("feedback"))
       )
-      )
+      # mainPanel(
+      #   # uiOutput(ns("word_display")),
+      #   tableOutput(ns("word_display")),
+      #   uiOutput(ns("feedback"))
+      # )
+
   )
 }
 
