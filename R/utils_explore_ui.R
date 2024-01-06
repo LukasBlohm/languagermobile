@@ -40,6 +40,19 @@ explore_ui_bslib <- function(ns) {
 
     htmltools::br(),
 
+    shiny::fluidRow(
+      shiny::column(
+        width = 3,
+        shiny::checkboxInput(ns("check_autosample"), "Automatic Sampling", value = FALSE)
+      ),
+      shiny::column(
+        width = 3,
+        shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
+      )
+    ),
+
+    htmltools::br(),
+
 
     bslib::card(
       shiny::fluidRow(
@@ -108,8 +121,8 @@ explore_ui_shiny <- function(ns) {
                          "Translation",
                          choices = NULL,
                          selected = NULL
-             )
-      )
+                         )
+                    )
     ),
 
     htmltools::br(),

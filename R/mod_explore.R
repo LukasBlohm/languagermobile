@@ -68,17 +68,32 @@ mod_explore_server <- function(id){
       show_translation = FALSE
     )
 
-    shiny::observeEvent(input$btn_load, {
-      message("Sample an expression")
-      list_reactives$show_translation <- FALSE
+    shiny::observe({
 
-      # print("head(df_active())")
-      # print(head(df_active()))
+      if (input$check_autosample) {
+
+        message("Automatic sample")
+
+        # Set the timer for x milliseconds (1000 milliseconds = 1 second)
+        shiny::invalidateLater(1000 * 2, session)
+
+        try(expression_original(
+          sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
+        ))
+
+      }
+    })
+
+    shiny::observeEvent(input$btn_load, {
+
+      message("Manual Sample")
+      list_reactives$show_translation <- FALSE
 
       try(expression_original(
         sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
       ))
     })
+
 
     shiny::observeEvent(input$btn_show_result, {
       list_reactives$show_translation <- TRUE
@@ -95,7 +110,7 @@ mod_explore_server <- function(id){
     })
 
     shiny::observe({
-      if (list_reactives$show_translation) {
+      if (list_reactives$show_translation | input$check_autotranslate == 1) {
         message("Show translation")
         try(
           expression_translated <-
