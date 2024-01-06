@@ -28,6 +28,7 @@ mod_explore_server <- function(id){
 
     df_active <- shiny::reactiveVal(tibble::tibble())
     expression_original <- shiny::reactiveVal("")
+    expression_translated <- shiny::reactiveVal("")
 
     shiny::updateSelectInput(
       session = session,
@@ -74,7 +75,7 @@ mod_explore_server <- function(id){
 
         message("Automatic sample")
 
-        shiny::invalidateLater(1000 * 2, session)
+        shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
         try(expression_original(
           sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
@@ -109,23 +110,26 @@ mod_explore_server <- function(id){
     })
 
     shiny::observe({
+
       if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
         message("Show translation")
         try(
-          expression_translated <-
+          expression_translated(
             df_active()[df_active()[[input$language_1]] == expression_original(),
                         input$language_2]
+          )
         )
 
         try(
           output$table <- shiny::renderTable({
             shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
+            shiny::req(expression_translated())
 
             message("Original expression: ", expression_original())
-            message("Translation: ", expression_translated)
+            message("Translation: ", expression_translated())
 
             data.frame(Original = expression_original(),
-                       Translation = expression_translated)
+                       Translation = expression_translated())
           }, width = "100%", align = "l")
         )
       } else {

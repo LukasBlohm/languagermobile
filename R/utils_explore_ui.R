@@ -61,14 +61,21 @@ explore_ui_bslib <- function(ns) {
         ),
         shiny::column(
           width = 6,
-          conditionalPanel(
+          shiny::conditionalPanel(
             condition = "!input.check_automode",
             ns = ns,
             shiny::actionButton(ns("btn_load"), "Sample new expression",
                                 style='padding:5px; font-size:90%')
-            )
+            ),
+          shiny::conditionalPanel(
+            condition = "input.check_automode",
+            ns = ns,
+            shiny::sliderInput(
+              ns("sample_speed"), "Speed (sec)",
+              value = 2, min = 1, max = 5, step = 0.5)
           )
-      ), height = "70px"
+          )
+      ), height = ifelse("input.check_automode", "120px", "70px")
     ),
 
     shiny::conditionalPanel(
