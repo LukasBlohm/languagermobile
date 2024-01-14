@@ -26,12 +26,6 @@ load_datasets <- function(file_name) {
            envir = .GlobalEnv)
 }
 
-# load_datasets <- purrr::as_mapper(
-#   ~ readr::read_csv(paste0("data_inputs/", .x)) %>%
-#     assign(x = paste0("df_", str_remove(.x, ".csv")),
-#            envir = .GlobalEnv)
-#   )
-
 
 
 #' Generate_df_ui_labels
