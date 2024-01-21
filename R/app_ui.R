@@ -1,16 +1,14 @@
 #' The application User-Interface
 #'
 #' @param request Internal parameter for `{shiny}`.
-#'     DO NOT REMOVE.
+#'
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
 
-
   tagList(
     # Leave this function for adding external resources
-    # golem_add_external_resources(),
-    # Your application UI logic
+    # golem_add_external_resources()
     fluidPage(
       theme = bslib::bs_theme(version = 5, bootswatch = "slate"),
       # h1("languager")
@@ -26,10 +24,13 @@ app_ui <- function(request) {
           title = "Vocab",
           mod_vocab_ui("vocab_module")
         ),
-        tabPanel(
-          title = "Translator",
-          mod_translate_ui("translate_module")
-        )
+
+        if (golem::get_golem_options("translator")) {
+          tabPanel(
+            title = "Translator",
+            mod_translate_ui("translate_module")
+          )
+        }
       )
     )
   )

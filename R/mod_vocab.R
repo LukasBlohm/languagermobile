@@ -41,11 +41,6 @@ mod_vocab_ui <- function(id){
         full_screen = TRUE,
         shiny::uiOutput(ns("feedback"))
       )
-      # mainPanel(
-      #   # uiOutput(ns("word_display")),
-      #   tableOutput(ns("word_display")),
-      #   uiOutput(ns("feedback"))
-      # )
 
   )
 }
@@ -57,10 +52,7 @@ mod_vocab_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # Read the vocab data
-    vocab_data <- reactive({
-      read.csv("data_inputs/vocab_1000.csv")
-    })
+    vocab_data <- .GlobalEnv$df_vocab
 
     list_reactives <- reactiveValues(
       user_word = FALSE,
@@ -103,7 +95,7 @@ mod_vocab_server <- function(id){
     observeEvent(input$btn_get_word_to_translate, {
       message("Sample a random word")
       word_to_translate(
-        sample(vocab_data()[, input$language_1], 1)
+        sample(vocab_data[, input$language_1], 1)
       )
     })
 
@@ -140,7 +132,7 @@ mod_vocab_server <- function(id){
 
       req(word_to_translate())  # Prevent error when submit is pressed but no sentence has been sampled yet.
 
-      real_translation <- vocab_data()[vocab_data()[, input$language_1] == word_to_translate(), list_reactives$other_language]
+      real_translation <- vocab_data[vocab_data[, input$language_1] == word_to_translate(), list_reactives$other_language]
 
       # print(paste0("input$guess: ", input$guess))
       # print(paste0("real_translation: ", real_translation))

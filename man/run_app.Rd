@@ -7,6 +7,7 @@
 run_app(
   onStart = NULL,
   options = list(),
+  translator,
   enableBookmarking = NULL,
   uiPattern = "/",
   ...

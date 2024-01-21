@@ -10,6 +10,7 @@
 run_app <- function(
   onStart = NULL,
   options = list(),
+  translator,
   enableBookmarking = NULL,
   uiPattern = "/",
   ...
@@ -41,6 +42,6 @@ run_app <- function(
       enableBookmarking = enableBookmarking,
       uiPattern = uiPattern
     ),
-    golem_opts = list(...)
+    golem_opts = list(translator = translator)
   )
 }

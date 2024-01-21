@@ -12,4 +12,5 @@ dev/
 data_pdf/
 data_raw/
 
-!data_inputs/example.csv
+!data_inputs/vocab.csv
+!data_inputs/sentences.csv

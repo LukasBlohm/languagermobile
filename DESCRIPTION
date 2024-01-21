@@ -1,6 +1,6 @@
 Package: languager
 Title: Shiny App to learn languages
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Lukas",
            family = "Blohm",
@@ -17,8 +17,10 @@ Imports:
     lubridate (>= 1.9.2),
     magrittr (>= 2.0.3),
     purrr (>= 1.0.1),
+    readr (>= 2.1.4),
     reticulate (>= 1.30),
     rlang (>= 1.1.1), 
+    roxygen2 (>= 7.2.3),
     shiny (>= 1.7.4),
     stringr (>= 1.5.0),
     tibble (>= 3.1.8),
