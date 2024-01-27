@@ -49,18 +49,18 @@ mod_vocab_ui <- function(id){
 #'
 #' @noRd
 mod_vocab_server <- function(id){
-  moduleServer( id, function(input, output, session){
+  shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
 
     vocab_data <- .GlobalEnv$df_vocab
 
-    list_reactives <- reactiveValues(
+    list_reactives <- shiny::reactiveValues(
       user_word = FALSE,
       other_language = "EN"
     )
-    word_to_translate <- reactiveVal("")
+    word_to_translate <- shiny::reactiveVal("")
 
-    observe({
+    shiny::observe({
       # print(input$language_1)
       if (input$language_1 == "FR") {
         message("Language 1 set to FR, language 2 set to EN")
@@ -71,14 +71,14 @@ mod_vocab_server <- function(id){
       }
     })
 
-    output$user_word <- reactive({
+    output$user_word <- shiny::reactive({
       list_reactives$user_word
     })
-    outputOptions(
+    shiny::outputOptions(
       output, "user_word", suspendWhenHidden = FALSE
     )
 
-    observe({
+    shiny::observe({
       if (input$word_source == "User Choice") {
         message("Set input source to User Choice")
         list_reactives$user_word <- TRUE
@@ -92,35 +92,36 @@ mod_vocab_server <- function(id){
     #   message("Word to translate: ", word_to_translate())
     # })
 
-    observeEvent(input$btn_get_word_to_translate, {
-      message("Sample a random word")
+    shiny::observeEvent(input$btn_get_word_to_translate, {
       word_to_translate(
-        sample(vocab_data[, input$language_1], 1)
+        dplyr::pull(dplyr::slice_sample(vocab_data[, input$language_1], n = 1))
       )
+      message("Sampled random word ", word_to_translate())
     })
 
-    output$word_display <- renderTable({
-      # message("Show word to translate")
+
+    output$word_display <- shiny::renderTable({
       data.frame(Word = word_to_translate())
     }, width = "60%")
 
-    observeEvent(input$btn_get_word_to_translate, {
-      output$word_display <- renderTable({
+    shiny::observeEvent(input$btn_get_word_to_translate, {
+      output$word_display <- shiny::renderTable({
         message("Show word to translate")
         data.frame(Word = word_to_translate())
       }, width = "60%")
-      output$feedback <- renderText({
+      output$feedback <- shiny::renderText({
         ""
       })
     })
 
 
-    observeEvent(input$language_1, {
+
+    shiny::observeEvent(input$language_1, {
       word_to_translate("")
     })
 
     # Provide feedback on the user's guess
-    observeEvent(input$submit, {
+    shiny::observeEvent(input$submit, {
 
       if (input$word_source != "Random") {
         message("Register user submission")
@@ -130,7 +131,7 @@ mod_vocab_server <- function(id){
         )
       }
 
-      req(word_to_translate())  # Prevent error when submit is pressed but no sentence has been sampled yet.
+      shiny::req(word_to_translate())  # Prevent error when submit is pressed but no sentence has been sampled yet.
 
       real_translation <- vocab_data[vocab_data[, input$language_1] == word_to_translate(), list_reactives$other_language]
 
@@ -144,21 +145,21 @@ mod_vocab_server <- function(id){
         output$feedback <- renderText({"Correct!"})
 
         # Clear text input
-        updateTextInput(session, "guess", value = "")
+        shiny::updateTextInput(session, "guess", value = "")
 
-        output$word_display <- renderTable({
+        output$word_display <- shiny::renderTable({
           message("Show word to translate")
           data.frame(Word = word_to_translate(),
                      Translation = real_translation)
         }, width = "60%")
 
       } else {
-        output$feedback <- renderText({
+        output$feedback <- shiny::renderText({
           message("Incorrect submission")
-          paste0("Incorrect. The actaul translation is ", real_translation)
+          paste0("Incorrect. The actual translation is ", real_translation)
           })
 
-        output$word_display <- renderTable({
+        output$word_display <- shiny::renderTable({
           message("Show word to translate")
           data.frame(Word = word_to_translate())
         }, width = "60%")

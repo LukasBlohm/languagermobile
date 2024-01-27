@@ -10,7 +10,7 @@
 run_app <- function(
   onStart = NULL,
   options = list(),
-  translator,
+  translator = FALSE,
   enableBookmarking = NULL,
   uiPattern = "/",
   ...

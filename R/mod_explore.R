@@ -65,7 +65,7 @@ mod_explore_server <- function(id){
       df_active(.GlobalEnv[[paste0("df_", input$dataset)]])
     })
 
-    list_reactives <- reactiveValues(
+    list_reactives <- shiny::reactiveValues(
       show_translation = FALSE
     )
 
