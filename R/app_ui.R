@@ -2,31 +2,37 @@
 #'
 #' @param request Internal parameter for `{shiny}`.
 #'
-#' @import shiny
 #' @noRd
 app_ui <- function(request) {
 
-  tagList(
+  htmltools::tagList(
     # Leave this function for adding external resources
     # golem_add_external_resources()
-    fluidPage(
+
+    shiny::fluidPage(
+
+      # Check device type
+      shinybrowser::detect(),
+
+      # Set theme
       theme = bslib::bs_theme(version = 5, bootswatch = "slate"),
+
       # h1("languager")
 
-      tabsetPanel(
+      shiny::tabsetPanel(
         id = "tabs",  # Set ID for conditional module loading
 
-        tabPanel(
+        shiny::tabPanel(
           title = "Explorer",
           mod_explore_ui("explore_module")
         ),
-        tabPanel(
+        shiny::tabPanel(
           title = "Vocab",
           mod_vocab_ui("vocab_module")
         ),
 
         if (golem::get_golem_options("translator")) {
-          tabPanel(
+          shiny::tabPanel(
             title = "Translator",
             mod_translate_ui("translate_module")
           )

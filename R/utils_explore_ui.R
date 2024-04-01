@@ -96,7 +96,7 @@ explore_ui_bslib <- function(ns) {
                                   style='padding:5px; font-size:90%')
             )
           )
-        ), height = "70px"
+        )#, height = "70px"
       )
     ),
 

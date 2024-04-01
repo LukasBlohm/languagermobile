@@ -13,35 +13,38 @@ mod_vocab_ui <- function(id){
   bslib::page_sidebar(
 
     sidebar = bslib::sidebar(
-        selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
-        radioButtons(ns("word_source"), "Word Source:",
-                     choices = c("Random", "User Choice"),
-                     selected = "Random"),
-        conditionalPanel(
-          condition = "output.user_word",
-          ns = ns,
-          textInput(ns("user_word_to_translate"), "Enter word")
-        ),
-        conditionalPanel(
-          condition = "!output.user_word",
-          ns = ns,
-          actionButton(ns("btn_get_word_to_translate"), "Sample a word")
-        ),
-        br(),
-        textInput(ns("guess"), "Your Guess"),
-        actionButton(ns("submit"), "Submit"),
-        tags$script(HTML(submit_on_enter(btn_id = ns("submit")))),
+      shiny::selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
+      shiny::radioButtons(ns("word_source"), "Word Source:",
+                          choices = c("Random", "User Choice"),
+                          selected = "Random"),
+      shiny::conditionalPanel(
+        condition = "output.user_word",
+        ns = ns,
+        shiny::textInput(ns("user_word_to_translate"), "Enter word")
       ),
-      bslib::card(
-        full_screen = TRUE,
-        bslib::card_header("Word"),
-        shiny::tableOutput(ns("word_display"))
+      shiny::conditionalPanel(
+        condition = "!output.user_word",
+        ns = ns,
+        shiny::actionButton(ns("btn_get_word_to_translate"), "Sample a word")
       ),
-      bslib::card(
-        full_screen = TRUE,
-        shiny::uiOutput(ns("feedback"))
-      )
-
+      htmltools::br(),
+      shiny::textInput(ns("guess"), "Your Guess"),
+      shiny::actionButton(ns("submit"), "Submit"),
+      tags$script(htmltools::HTML(submit_on_enter(btn_id = ns("submit")))),
+    ),
+    bslib::card(
+      full_screen = TRUE,
+      bslib::card_header("Word"),
+      shiny::tableOutput(ns("word_display")),
+      shiny::uiOutput(ns("feedback"))
+    )
+    # ,
+    # bslib::card(
+    #   full_screen = TRUE,
+    #   # shinybrowser::detect(),
+    #   "Are you on mobile?",
+    #   shiny::textOutput(ns("result"))
+    # )
   )
 }
 
@@ -51,6 +54,23 @@ mod_vocab_ui <- function(id){
 mod_vocab_server <- function(id){
   shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    shiny::observe({
+      if (isTRUE(shiny::isolate(shinybrowser::is_device_mobile()))) {
+        message("Mobile")
+      } else {
+        message("Desktop")
+      }
+    })
+    output$result <- shiny::renderText({
+      shinybrowser::is_device_mobile()
+    })
+    # if (isTRUE(shinybrowser::is_device_mobile())) {
+    #   message("Mobile")
+    # } else {
+    #   message("Desktop")
+    # }
+
 
     vocab_data <- .GlobalEnv$df_vocab
 
@@ -109,9 +129,7 @@ mod_vocab_server <- function(id){
         message("Show word to translate")
         data.frame(Word = word_to_translate())
       }, width = "60%")
-      output$feedback <- shiny::renderText({
-        ""
-      })
+      output$feedback <- shiny::renderText("")
     })
 
 
@@ -142,7 +160,7 @@ mod_vocab_server <- function(id){
 
       if (input$guess %in% real_translation) {
         message("Correct submission")
-        output$feedback <- renderText({"Correct!"})
+        output$feedback <- shiny::renderText({"Correct!"})
 
         # Clear text input
         shiny::updateTextInput(session, "guess", value = "")
