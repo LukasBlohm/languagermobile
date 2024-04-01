@@ -39,7 +39,7 @@ mod_explore_server <- function(id){
     shiny::observe({
       shiny::updateSelectInput(
         session = session,
-        "language_1",
+        "language_selected",
         choices = get_languages(input),
         selected = "FR"
       )
@@ -48,13 +48,13 @@ mod_explore_server <- function(id){
     shiny::observe({
 
       languages <- get_languages(input)
-      other_options <- languages[languages != input$language_1]
+      other_options <- languages[languages != input$language_selected]
 
       shiny::updateSelectInput(
         session = session,
-        "language_2",
+        "other_languages",
         choices = other_options,
-        selected = other_options[1]
+        selected = other_options #[1]
       )
     })
 
@@ -78,7 +78,7 @@ mod_explore_server <- function(id){
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
         try(expression_original(
-          sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
+          sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
         ))
 
       }
@@ -90,7 +90,7 @@ mod_explore_server <- function(id){
       list_reactives$show_translation <- FALSE
 
       try(expression_original(
-        sample(x = dplyr::pull(df_active()[, input$language_1]), size = 1)
+        sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
       ))
     })
 
@@ -99,7 +99,7 @@ mod_explore_server <- function(id){
       list_reactives$show_translation <- TRUE
     })
 
-    shiny::observeEvent(input$language_1, {
+    shiny::observeEvent(input$language_selected, {
       list_reactives$show_translation <- FALSE
       expression_original("")
     })
@@ -115,8 +115,8 @@ mod_explore_server <- function(id){
         message("Show translation")
         try(
           expression_translated(
-            df_active()[df_active()[[input$language_1]] == expression_original(),
-                        input$language_2]
+            df_active()[df_active()[[input$language_selected]] == expression_original(),
+                        input$other_languages]
           )
         )
 
