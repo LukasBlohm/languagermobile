@@ -11,6 +11,7 @@ app_ui <- function(request) {
 
     shinyMobile::f7Page(
 
+      allowPWA = TRUE,
       options = list(dark = FALSE, filled = FALSE, theme = "ios"),
       title = "languagermobile",
       shinyMobile::f7TabLayout(

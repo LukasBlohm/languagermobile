@@ -1,0 +1,13 @@
+name: languagermobile
+title: languagermobile
+username: lblohm
+account: lblohm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12430445
+bundleId: 8965678
+url: https://lblohm.shinyapps.io/languagermobile/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: dev/add-new_data.R|man/add_pwa_deps.Rd|man/add_pwacompat_deps.Rd|man/run_app.Rd
