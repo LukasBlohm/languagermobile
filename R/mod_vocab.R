@@ -57,9 +57,9 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
       if (isTRUE(shiny::isolate(shinybrowser::is_device_mobile()))) {
-        message("Mobile")
+        cli::cli_alert_info("Mobile")
       } else {
-        message("Desktop")
+        cli::cli_alert_info("Desktop")
       }
     })
     output$result <- shiny::renderText({
@@ -83,10 +83,10 @@ mod_vocab_server <- function(id){
     shiny::observe({
       # print(input$language_1)
       if (input$language_1 == "FR") {
-        message("Language 1 set to FR, language 2 set to EN")
+        cli::cli_alert_info("Language 1 set to FR, language 2 set to EN")
         list_reactives$other_language <- "EN"
       } else {
-        message("Language 1 set to EN, language 2 set to FR")
+        cli::cli_alert_info("Language 1 set to EN, language 2 set to FR")
         list_reactives$other_language <- "FR"
       }
     })
@@ -100,10 +100,10 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
       if (input$word_source == "User Choice") {
-        message("Set input source to User Choice")
+        cli::cli_alert_info("Set input source to User Choice")
         list_reactives$user_word <- TRUE
       } else {
-        message("Set input source to Random")
+        cli::cli_alert_info("Set input source to Random")
         list_reactives$user_word <- FALSE
       }
     })
@@ -116,7 +116,7 @@ mod_vocab_server <- function(id){
       word_to_translate(
         dplyr::pull(dplyr::slice_sample(vocab_data[, input$language_1], n = 1))
       )
-      message("Sampled random word ", word_to_translate())
+      cli::cli_alert("Sampled random word {word_to_translate()}")
     })
 
 
@@ -126,7 +126,7 @@ mod_vocab_server <- function(id){
 
     shiny::observeEvent(input$btn_get_word_to_translate, {
       output$word_display <- shiny::renderTable({
-        message("Show word to translate")
+        cli::cli_text("Show word to translate")
         data.frame(Word = word_to_translate())
       }, width = "60%")
       output$feedback <- shiny::renderText("")
@@ -142,7 +142,7 @@ mod_vocab_server <- function(id){
     shiny::observeEvent(input$submit, {
 
       if (input$word_source != "Random") {
-        message("Register user submission")
+        cli::cli_text("Register user submission")
         # list_reactives$show_translation <- FALSE
         word_to_translate(
           input$user_word_to_translate
@@ -156,29 +156,29 @@ mod_vocab_server <- function(id){
       # print(paste0("input$guess: ", input$guess))
       # print(paste0("real_translation: ", real_translation))
 
-      message("Correct submission = ", input$guess %in% real_translation) # there can be more than 1 correct translation, e.g. temps = time and weather
+      # cli::cli_alert("Correct submission = {input$guess %in% real_translation}") # there can be more than 1 correct translation, e.g. temps = time and weather
 
       if (input$guess %in% real_translation) {
-        message("Correct submission")
+        cli::cli_alert_success("Correct submission")
         output$feedback <- shiny::renderText({"Correct!"})
 
         # Clear text input
         shiny::updateTextInput(session, "guess", value = "")
 
         output$word_display <- shiny::renderTable({
-          message("Show word to translate")
+          cli::cli_alert("Show word to translate")
           data.frame(Word = word_to_translate(),
                      Translation = real_translation)
         }, width = "60%")
 
       } else {
         output$feedback <- shiny::renderText({
-          message("Incorrect submission")
+          cli::cli_alert("Incorrect submission")
           paste0("Incorrect. The actual translation is ", real_translation)
           })
 
         output$word_display <- shiny::renderTable({
-          message("Show word to translate")
+          cli::cli_alert("Show word to translate")
           data.frame(Word = word_to_translate())
         }, width = "60%")
       }

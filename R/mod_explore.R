@@ -60,8 +60,7 @@ mod_explore_server <- function(id){
 
     shiny::observe({
       shiny::req(paste0("df_", input$dataset))
-      message(short_separator)
-      message("Activate dataset ", input$dataset)
+      cli::cli_h2("Activate dataset {input$dataset}")
       df_active(.GlobalEnv[[paste0("df_", input$dataset)]])
     })
 
@@ -73,7 +72,7 @@ mod_explore_server <- function(id){
 
       if (input$check_automode) {
 
-        message("Automatic sample")
+        cli::cli_alert("Automatic sample")
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
@@ -86,7 +85,7 @@ mod_explore_server <- function(id){
 
     shiny::observeEvent(input$btn_load, {
 
-      message("Manual Sample")
+      cli::cli_alert("Manual Sample")
       list_reactives$show_translation <- FALSE
 
       try(expression_original(
@@ -112,7 +111,7 @@ mod_explore_server <- function(id){
     shiny::observe({
 
       if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
-        message("Show translation")
+        cli::cli_text("Show translation")
         try(
           expression_translated(
             df_active()[df_active()[[input$language_selected]] == expression_original(),
@@ -125,18 +124,18 @@ mod_explore_server <- function(id){
             shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
             shiny::req(expression_translated())
 
-            message("Original expression: ", expression_original())
-            message("Translation: ", expression_translated())
+            cli::cli_alert("Original expression: {expression_original()}")
+            cli::cli_alert("Translation: {expression_translated()}")
 
             data.frame(Original = expression_original(),
                        Translation = expression_translated())
           }, width = "100%", align = "l")
         )
       } else {
-        message("Hide translation")
+        cli::cli_alert_info("Hide translation")
         output$table <- shiny::renderTable({
 
-          message("Original expression: ", expression_original())
+          cli::cli_alert("Original expression: {expression_original()}")
 
           data.frame(Original = expression_original(),
                      Translation = "")

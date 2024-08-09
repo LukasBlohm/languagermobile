@@ -10,16 +10,14 @@ app_server <- function(input, output, session) {
 
   shiny::observeEvent(input$tabs, {
     if (input$tabs == "Explorer") {
-      message(long_separator)
-      message("Load Explorer Module")
+      cli::cli_h1("Load Explorer Module")
       mod_explore_server("explore_module")
     }
   })
 
   shiny::observeEvent(input$tabs, {
     if (input$tabs == "Vocab") {
-      message(long_separator)
-      message("Load Vocab Module")
+      cli::cli_h1("Load Vocab Module")
       mod_vocab_server("vocab_module")
     }
   })
@@ -27,8 +25,7 @@ app_server <- function(input, output, session) {
   # Activate translator module once the user navigates there
   shiny::observeEvent(input$tabs, {
     if (input$tabs == "Translator") {
-      message(long_separator)
-      message("Load Translator Module")
+      cli::cli_h1("Load Translator Module")
       mod_translate_server("translate_module")
     }
   })

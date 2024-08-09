@@ -17,19 +17,21 @@
 #' \dontrun{setup_translator()}
 setup_translator <- function(language_pairs = "de-fr", model_path = NULL) {
 
-  message("Start setup of reticulate-python")
+  cli::cli_alert_info("Start setup of reticulate-python")
   setup_virtualenv()
 
-  message("Module import")
+  cli::cli_alert("Module import")
   .python_modules$transformers <- reticulate::import("transformers")
 
-  message("Load dependencies")
+  cli::cli_alert("Load dependencies")
   dependencies <- purrr::map(
     language_pairs,
     ~ load_dependencies(language_pair = .x, model_path = model_path,
                         transformers = .python_modules$transformers)
     ) %>%
     purrr::set_names(language_pairs)
+
+  cli::cli_alert_success("Finished setup of dependencies")
 
   return(dependencies)
 }
@@ -69,18 +71,17 @@ translate <- function(input_text, dependencies, language_pair, verbose = TRUE) {
       translated_text <- tokenizer$decode(outputs[[0]], skip_special_tokens = TRUE)
 
       if (verbose) {
-        message("Normal translation finished (",
-                n_characters, " characters in ",
-                lubridate::dseconds(round(
+        cli::cli_alert_info(
+          "Normal translation finished ({n_characters} characters in {lubridate::dseconds(round(
                   lubridate::as.duration(Sys.time() - start_time), 1)
-                  ), ")")
+                )})")
       }
 
       return(translated_text)
     } else {
 
       if (verbose) {
-        message("Text too long")
+        cli::cli_alert_danger("Text too long")
       }
       return("")
     }

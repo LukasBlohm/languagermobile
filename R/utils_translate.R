@@ -14,22 +14,22 @@ setup_virtualenv <- function(venv_name = "languager") {
       reticulate::install_python()
     }
 
-    message("Create virtual environment 'languager'")
+    cli::cli_alert("Create virtual environment 'languager'")
     reticulate::virtualenv_create(
       venv_name,
       python = reticulate::py_config()$python
       )
 
-    message("Install python modules")
+    cli::cli_alert("Install python modules")
     reticulate::virtualenv_install(
       venv_name,
       packages = c("torch", "transformers", "sentencepiece", "sacremoses")
       )
 
-    message("Installation of python modules complete")
+    cli::cli_alert_success("Installation of python modules complete")
   }
 
-  message("Start venv")
+  cli::cli_alert("Start venv")
   reticulate::use_virtualenv(venv_name)
 }
 
@@ -51,28 +51,28 @@ setup_virtualenv <- function(venv_name = "languager") {
 #' \dontrun{load_dependencies(language_pair = "fr-de", transformers = .python_modules$transformers)}
 load_dependencies <- function(language_pair = "fr-de", transformers, model_path = NULL) {
 
-  message("start load_dependencies()")
+  cli::cli_alert_info("start load_dependencies()")
   if (!is.null(model_path)) {
-    message("Load tokenizer")
+    cli::cli_alert("Load tokenizer")
     tokenizer <- transformers$MarianTokenizer$from_pretrained(
       file.path(model_path, paste0("model_", language_pair))
     )
 
-    message("Load model")
+    cli::cli_alert("Load model")
     model <- transformers$MarianMTModel$from_pretrained(
       file.path(model_path, paste0("model_", language_pair))
     )
   } else {
-    message("Load tokenizer from ~/.cache/huggingface/hub/")
+    cli::cli_alert("Load tokenizer from ~/.cache/huggingface/hub/")
     tokenizer <- transformers$MarianTokenizer$from_pretrained(
       paste0("Helsinki-NLP/opus-mt-", language_pair)
     )
-    message("Load model from ~/.cache/huggingface/hub/")
+    cli::cli_alert("Load model from ~/.cache/huggingface/hub/")
     model <- transformers$MarianMTModel$from_pretrained(
       paste0("Helsinki-NLP/opus-mt-", language_pair)
     )
   }
-  message("Dependencies for ", language_pair, " loaded.")
+  cli::cli_alert_success("Dependencies for ", language_pair, " loaded.")
 
   return(list(
     tokenizer = tokenizer, model = model
