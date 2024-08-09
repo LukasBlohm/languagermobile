@@ -9,34 +9,38 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     # golem_add_external_resources()
 
-    shiny::fluidPage(
+    shinyMobile::f7Page(
 
-      # Check device type
-      shinybrowser::detect(),
+      options = list(dark = FALSE, filled = FALSE, theme = "ios"),
+      title = "languagermobile",
+      shinyMobile::f7TabLayout(
 
-      # Set theme
-      theme = bslib::bs_theme(version = 5, bootswatch = "slate"),
+        navbar = NULL,
+        # navbar = shinyMobile::f7Navbar(
+        #   title = "",
+        #   hairline = FALSE,
+        #   leftPanel = FALSE,
+        #   rightPanel = FALSE
+        # ),
 
-      # h1("languager")
-
-      shiny::tabsetPanel(
-        id = "tabs",  # Set ID for conditional module loading
-
-        shiny::tabPanel(
-          title = "Explorer",
-          mod_explore_ui("explore_module")
-        ),
-        shiny::tabPanel(
-          title = "Vocab",
-          mod_vocab_ui("vocab_module")
-        ),
-
-        if (golem::get_golem_options("translator")) {
-          shiny::tabPanel(
-            title = "Translator",
-            mod_translate_ui("translate_module")
+        shinyMobile::f7Tabs(
+          animated = TRUE,
+          id = "tabs",
+          shinyMobile::f7Tab(
+            title = "Explorer",
+            tabName = "Explorer",
+            icon = shinyMobile::f7Icon("folder"),
+            active = TRUE,
+            mod_explore_ui("explore_module")
+          ),
+          shinyMobile::f7Tab(
+            title = "Vocab",
+            tabName = "Vocab",
+            icon = shinyMobile::f7Icon("folder"),
+            active = TRUE,
+            mod_vocab_ui("vocab_module")
           )
-        }
+        )
       )
     )
   )
@@ -62,7 +66,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "languager"
+      app_title = "languagermobile"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()

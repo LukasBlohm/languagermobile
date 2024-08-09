@@ -11,7 +11,7 @@ mod_explore_ui <- function(id){
 
   ns <- shiny::NS(id)
 
-  explore_ui_bslib(ns)
+  explore_ui(ns)
 }
 
 

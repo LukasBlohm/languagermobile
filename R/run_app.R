@@ -29,8 +29,9 @@ run_app <- function(
     names(.GlobalEnv), pattern = stringr::fixed("df_"))]
 
   # Get list of column names for these data frames
-  .GlobalEnv$l_colnames <- purrr::map(v_df_names, ~ .GlobalEnv[[.x]] %>%
-                                        colnames()) %>%
+  .GlobalEnv$l_colnames <- purrr::map(
+    v_df_names, ~ .GlobalEnv[[.x]] %>% colnames()
+    ) %>%
     purrr::set_names(v_df_names)
 
   with_golem_options(
@@ -42,6 +43,6 @@ run_app <- function(
       enableBookmarking = enableBookmarking,
       uiPattern = uiPattern
     ),
-    golem_opts = list(translator = translator)
+    golem_opts = list()
   )
 }
