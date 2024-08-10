@@ -5,7 +5,7 @@ account: lblohm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12430445
-bundleId: 8965678
+bundleId: 8967928
 url: https://lblohm.shinyapps.io/languagermobile/
 version: 1
 asMultiple: FALSE

@@ -9,33 +9,35 @@ explore_ui <- function(ns) {
 
   bslib::page(
 
-    htmltools::br(),
+    # htmltools::br(),
 
-    shiny::fluidRow(
-      shiny::column(
-        width = 3,
-        shiny::selectInput(ns("dataset"),
-                           "Dataset",
-                           choices = NULL,
-                           selected = NULL
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::selectInput(ns("language_selected"),
-                           "Original Language",
-                           choices = NULL,
-                           selected = NULL
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::selectInput(
-          ns("other_languages"),
-          "Translation",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE
+    shinyMobile::f7Card(
+      outline = TRUE,
+      raised = TRUE,
+      divider = TRUE,
+      shiny::fluidRow(
+        shiny::column(
+          width = 6,
+          shiny::selectInput(
+            ns("dataset"), "Dataset", choices = NULL, selected = NULL
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shiny::selectInput(
+            ns("language_selected"), "Original Language",
+            choices = NULL, selected = NULL
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shiny::selectInput(
+            ns("other_languages"),
+            "Translation",
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE
+          )
         )
       )
     ),
@@ -53,7 +55,7 @@ explore_ui <- function(ns) {
     #   )
     # ),
 
-    htmltools::br(),
+    # htmltools::br(),
 
     shinyMobile::f7Card(
       outline = TRUE,
@@ -62,15 +64,21 @@ explore_ui <- function(ns) {
       shiny::fluidRow(
         shiny::column(
           width = 6,
-          shiny::checkboxInput(ns("check_automode"), "Automatic Mode", value = FALSE)
+          shinyMobile::f7Toggle(
+          # shinyMobile::f7Checkbox(
+            ns("check_automode"), label = "Automatic Mode", checked = FALSE,
+            color = .GlobalEnv$main_color
+            )
         ),
         shiny::column(
           width = 6,
           shiny::conditionalPanel(
             condition = "!input.check_automode",
             ns = ns,
-            shiny::actionButton(ns("btn_load"), "Sample new expression",
-                                style='padding:5px; font-size:90%')
+            shiny::actionButton(
+              ns("btn_load"), "Sample new expression",
+              style='padding:5px; font-size:90%'
+              )
           ),
           shiny::conditionalPanel(
             condition = "input.check_automode",
@@ -93,15 +101,22 @@ explore_ui <- function(ns) {
         shiny::fluidRow(
           shiny::column(
             width = 6,
-            shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
+            shinyMobile::f7List(
+              shinyMobile::f7Toggle(
+              ns("check_autotranslate"), label = "Automatic translation",
+              color = .GlobalEnv$main_color
+              )
+            )
           ),
           shiny::column(
             width = 6,
             conditionalPanel(
               condition = "!input.check_autotranslate",
               ns = ns,
-              shiny::actionButton(ns("btn_show_result"), "Show translation",
-                                  style='padding:5px; font-size:90%')
+              shiny::actionButton(
+                ns("btn_show_result"), "Show translation",
+                style='padding:5px; font-size:90%'
+                )
             )
           )
         )#, height = "70px"

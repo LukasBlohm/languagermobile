@@ -5,39 +5,50 @@
 #' @noRd
 app_ui <- function(request) {
 
+  # shinyWidgets::setSliderColor(.GlobalEnv$main_color_hex, 1)
+
+
+
   htmltools::tagList(
     # Leave this function for adding external resources
     # golem_add_external_resources()
 
+
     shinyMobile::f7Page(
 
+      shinyWidgets::chooseSliderSkin(
+        # skin = c("Shiny", "Flat", "Modern", "Nice", "Simple", "HTML5", "Round", "Square"),
+        skin = "Flat",
+        color = .GlobalEnv$main_color_hex
+      ),
+
       allowPWA = TRUE,
-      options = list(dark = FALSE, filled = FALSE, theme = "ios"),
+      options = list(
+        dark = FALSE,
+        color = .GlobalEnv$main_color,
+        filled = FALSE,
+        theme = "ios"
+        ),
       title = "languagermobile",
       shinyMobile::f7TabLayout(
 
         navbar = NULL,
-        # navbar = shinyMobile::f7Navbar(
-        #   title = "",
-        #   hairline = FALSE,
-        #   leftPanel = FALSE,
-        #   rightPanel = FALSE
-        # ),
 
         shinyMobile::f7Tabs(
-          animated = TRUE,
           id = "tabs",
+          animated = TRUE,
+          style = "toolbar",
           shinyMobile::f7Tab(
             title = "Explorer",
             tabName = "Explorer",
-            icon = shinyMobile::f7Icon("folder"),
+            icon = shinyMobile::f7Icon("eye"),
             active = TRUE,
             mod_explore_ui("explore_module")
           ),
           shinyMobile::f7Tab(
             title = "Vocab",
             tabName = "Vocab",
-            icon = shinyMobile::f7Icon("folder"),
+            icon = shinyMobile::f7Icon("question"),
             active = TRUE,
             mod_vocab_ui("vocab_module")
           )
