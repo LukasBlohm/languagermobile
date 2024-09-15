@@ -9,12 +9,16 @@ app_ui <- function(request) {
 
 
 
+
+
   htmltools::tagList(
     # Leave this function for adding external resources
     # golem_add_external_resources()
 
 
     shinyMobile::f7Page(
+
+
 
       shinyWidgets::chooseSliderSkin(
         # skin = c("Shiny", "Flat", "Modern", "Nice", "Simple", "HTML5", "Round", "Square"),
@@ -31,6 +35,9 @@ app_ui <- function(request) {
         ),
       title = "languagermobile",
       shinyMobile::f7TabLayout(
+
+
+
 
         navbar = NULL,
 

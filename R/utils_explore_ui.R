@@ -65,10 +65,10 @@ explore_ui <- function(ns) {
         shiny::column(
           width = 6,
           shinyMobile::f7Toggle(
-          # shinyMobile::f7Checkbox(
+            # shinyMobile::f7Checkbox(
             ns("check_automode"), label = "Automatic Mode", checked = FALSE,
             color = .GlobalEnv$main_color
-            )
+          )
         ),
         shiny::column(
           width = 6,
@@ -78,14 +78,15 @@ explore_ui <- function(ns) {
             shiny::actionButton(
               ns("btn_load"), "Sample new expression",
               style='padding:5px; font-size:90%'
-              )
+            )
           ),
           shiny::conditionalPanel(
             condition = "input.check_automode",
             ns = ns,
             shiny::sliderInput(
               ns("sample_speed"), "Speed (sec)",
-              value = 2, min = 1, max = 5, step = 0.5)
+              value = 2, min = 1, max = 5, step = 0.5
+            )
           )
         )
       ), height = ifelse("input.check_automode", "120px", "70px")
@@ -103,8 +104,8 @@ explore_ui <- function(ns) {
             width = 6,
             shinyMobile::f7List(
               shinyMobile::f7Toggle(
-              ns("check_autotranslate"), label = "Automatic translation",
-              color = .GlobalEnv$main_color
+                ns("check_autotranslate"), label = "Automatic translation",
+                color = .GlobalEnv$main_color
               )
             )
           ),
@@ -116,7 +117,7 @@ explore_ui <- function(ns) {
               shiny::actionButton(
                 ns("btn_show_result"), "Show translation",
                 style='padding:5px; font-size:90%'
-                )
+              )
             )
           )
         )#, height = "70px"
@@ -143,6 +144,33 @@ explore_ui <- function(ns) {
       raised = TRUE,
       divider = TRUE,
       full_screen = TRUE,
-      shiny::tableOutput(ns("table")))
+      shiny::tableOutput(ns("table"))
+    ),
+
+    # Hidden input to store has_priority
+    tags$style(htmltools::HTML("#explore_module-has_priority {display: none;}")),
+    shiny::textInput(ns("has_priority"), label = NULL, value = "false"),
+
+    shiny::conditionalPanel(
+      condition = "!input.check_automode && input.has_priority == 'true'",
+      ns = ns,
+      shinyMobile::f7Card(
+        outline = TRUE,
+        raised = TRUE,
+        divider = TRUE,
+        full_screen = TRUE,
+        shiny::sliderInput(
+          ns("priority"), "Priority",
+          value = 4,
+          min = 1, max = 5, step = 1
+        )
+      )
+    )
+
   )
 }
+
+
+
+
+

@@ -68,6 +68,17 @@ mod_explore_server <- function(id){
       show_translation = FALSE
     )
 
+    # Update hidden text input to control appearance of the priority slider
+    shiny::observe({
+      has_priority <- "priority" %in% colnames(df_active()) & expression_original() != ""
+
+      shiny::updateTextInput(
+        session, "has_priority",
+        value = ifelse(has_priority, "true", "false")
+        )
+    })
+
+
     shiny::observe({
 
       if (input$check_automode) {
@@ -76,10 +87,20 @@ mod_explore_server <- function(id){
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
-        try(expression_original(
-          sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
-        ))
-
+        if ("priority" %in% colnames(df_active())) {
+          expression_original(
+            dplyr::slice_sample(
+              df_active(),
+              weight_by = priority,
+              n = 1
+            ) %>%
+              dplyr::pull(input$language_selected)
+          )
+        } else {
+          expression_original(
+            sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
+          )
+        }
       }
     })
 
@@ -88,9 +109,9 @@ mod_explore_server <- function(id){
       cli::cli_alert("Manual Sample")
       list_reactives$show_translation <- FALSE
 
-      try(expression_original(
+      expression_original(
         sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
-      ))
+      )
     })
 
 
@@ -141,6 +162,44 @@ mod_explore_server <- function(id){
                      Translation = "")
         }, width = "100%", align = "l")
       }
+    })
+
+
+    # new priority slider -----------------------------------------------------
+
+    shiny::observe({
+
+      if (!input$check_automode && input$dataset == "phone_notes") {
+
+        # cli::cli_alert("Change priority")
+
+        shiny::updateSliderInput(
+          session = session,
+          "priority",
+          value = dplyr::pull(
+            df_active()[df_active()[[input$language_selected]] == expression_original(),
+                        "priority"]
+            )
+        )
+      }
+    })
+
+    shiny::observeEvent(input$priority, {
+
+      shiny::req(df_active())
+
+      df <- dplyr::mutate(
+          df_active(),
+          priority = dplyr::case_when(
+            !! rlang::sym(input$language_selected) == expression_original() ~ input$priority,
+            TRUE ~ priority
+          )
+        )
+
+      readr::write_csv(df, "data_inputs/phone_notes.csv")
+
+      # Update df_active
+      df_active(df)
     })
   })
 }
