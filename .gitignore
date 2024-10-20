@@ -5,10 +5,11 @@
 *.numbers
 *.pdf
 *.xlsx
-
 .Renviron
-
 dev/
 data_pdf/
 data_raw/
 rsconnect/
+.httr-oauth
+droptoken.rds
+token.rds

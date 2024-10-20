@@ -17,6 +17,7 @@ Imports:
     lubridate (>= 1.9.2),
     magrittr (>= 2.0.3),
     purrr (>= 1.0.1),
+    rdrop2 (>= 0.8.2.2),
     readr (>= 2.1.4),
     rlang (>= 1.1.1), 
     roxygen2 (>= 7.2.3),

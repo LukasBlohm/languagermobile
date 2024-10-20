@@ -61,7 +61,10 @@ mod_explore_server <- function(id){
     shiny::observe({
       shiny::req(paste0("df_", input$dataset))
       cli::cli_h2("Activate dataset {input$dataset}")
-      df_active(.GlobalEnv[[paste0("df_", input$dataset)]])
+
+      df_name <- paste0("df_", input$dataset)
+
+      df_active(.GlobalEnv[[df_name]])
     })
 
     list_reactives <- shiny::reactiveValues(
@@ -169,7 +172,7 @@ mod_explore_server <- function(id){
 
     shiny::observe({
 
-      if (!input$check_automode && input$dataset == "phone_notes") {
+      if (!input$check_automode && input$dataset %in% c("dropbox", "phone_notes")) {
 
         # cli::cli_alert("Change priority")
 
@@ -196,7 +199,10 @@ mod_explore_server <- function(id){
           )
         )
 
-      readr::write_csv(df, "data_inputs/phone_notes.csv")
+      readr::write_csv(df, .GlobalEnv$path_dropbox)
+      rdrop2::drop_upload(
+        .GlobalEnv$path_dropbox, mode = "overwrite", dtoken = .GlobalEnv$token
+        )
 
       # Update df_active
       df_active(df)

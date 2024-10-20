@@ -24,15 +24,24 @@ run_app <- function(
   # Read the datasets
   purrr::walk(file_names, load_datasets)
 
+  rdrop2::drop_auth(rdstoken = "token.rds")
+  .GlobalEnv$token <- readRDS("token.rds")
+  rdrop2::drop_download(
+    .GlobalEnv$path_dropbox,
+    overwrite = TRUE,
+    dtoken = .GlobalEnv$token
+    )
+  .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox)
+
   # Get names of the data frames in .GlobalEnv (which start with "df_")
-  .GlobalEnv$v_df_names <- names(.GlobalEnv)[stringr::str_starts(
-    names(.GlobalEnv), pattern = stringr::fixed("df_"))]
+  .GlobalEnv$v_df_names <- names(.GlobalEnv)[stringr::str_starts(names(.GlobalEnv), pattern = stringr::fixed("df_"))]
 
   # Get list of column names for these data frames
   .GlobalEnv$l_colnames <- purrr::map(
-    v_df_names, ~ .GlobalEnv[[.x]] %>% colnames()
+    v_df_names, \(df) .GlobalEnv[[df]] %>% colnames()
     ) %>%
     purrr::set_names(v_df_names)
+
 
   with_golem_options(
     app = shinyApp(
@@ -46,3 +55,5 @@ run_app <- function(
     golem_opts = list()
   )
 }
+
+
