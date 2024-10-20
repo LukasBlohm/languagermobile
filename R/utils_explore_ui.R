@@ -57,40 +57,6 @@ explore_ui <- function(ns) {
 
     # htmltools::br(),
 
-    shinyMobile::f7Card(
-      outline = TRUE,
-      raised = TRUE,
-      divider = TRUE,
-      shiny::fluidRow(
-        shiny::column(
-          width = 6,
-          shinyMobile::f7Toggle(
-            # shinyMobile::f7Checkbox(
-            ns("check_automode"), label = "Automatic Mode", checked = FALSE,
-            color = .GlobalEnv$main_color
-          )
-        ),
-        shiny::column(
-          width = 6,
-          shiny::conditionalPanel(
-            condition = "!input.check_automode",
-            ns = ns,
-            shiny::actionButton(
-              ns("btn_load"), "Sample new expression",
-              style='padding:5px; font-size:90%'
-            )
-          ),
-          shiny::conditionalPanel(
-            condition = "input.check_automode",
-            ns = ns,
-            shiny::sliderInput(
-              ns("sample_speed"), "Speed (sec)",
-              value = 2, min = 1, max = 5, step = 0.5
-            )
-          )
-        )
-      ), height = ifelse("input.check_automode", "120px", "70px")
-    ),
 
     shiny::conditionalPanel(
       condition = "!input.check_automode",
@@ -105,6 +71,7 @@ explore_ui <- function(ns) {
             shinyMobile::f7List(
               shinyMobile::f7Toggle(
                 ns("check_autotranslate"), label = "Automatic translation",
+                checked = TRUE,
                 color = .GlobalEnv$main_color
               )
             )
@@ -124,7 +91,52 @@ explore_ui <- function(ns) {
       )
     ),
 
-    # textOutput(ns("feedback")),
+    shinyMobile::f7Card(
+      outline = TRUE,
+      raised = TRUE,
+      divider = TRUE,
+      full_screen = TRUE,
+      shiny::tableOutput(ns("table"))
+    ),
+
+
+
+    shinyMobile::f7Card(
+      outline = TRUE,
+      raised = TRUE,
+      divider = TRUE,
+      shiny::fluidRow(
+        shiny::column(
+          width = 6,
+          shiny::conditionalPanel(
+            condition = "!input.check_automode",
+            ns = ns,
+            shiny::actionButton(
+              ns("btn_load"), "Sample new expression",
+              style='padding:5px; font-size:90%'
+            )
+          ),
+          shiny::conditionalPanel(
+            condition = "input.check_automode",
+            ns = ns,
+            shiny::sliderInput(
+              ns("sample_speed"), "Speed (sec)",
+              value = 2, min = 1, max = 5, step = 0.5
+            )
+          )
+        ),
+        shiny::column(
+          width = 6,
+          shinyMobile::f7Toggle(
+            # shinyMobile::f7Checkbox(
+            ns("check_automode"), label = "Automatic Mode", checked = FALSE,
+            color = .GlobalEnv$main_color
+          )
+        )
+      ), height = ifelse("input.check_automode", "120px", "70px")
+    ),
+
+
     tags$script(htmltools::HTML(submit_on_enter(btn_id = ns("btn_show_result")))),
     tags$script(htmltools::HTML(submit_on_enter(btn_id = ns("btn_load")))),
 
@@ -139,13 +151,6 @@ explore_ui <- function(ns) {
     "))
     ),
 
-    shinyMobile::f7Card(
-      outline = TRUE,
-      raised = TRUE,
-      divider = TRUE,
-      full_screen = TRUE,
-      shiny::tableOutput(ns("table"))
-    ),
 
     # Hidden input to store has_priority
     tags$style(htmltools::HTML("#explore_module-has_priority {display: none;}")),
