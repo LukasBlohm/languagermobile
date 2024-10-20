@@ -19,14 +19,14 @@ explore_ui <- function(ns) {
         shiny::column(
           width = 6,
           shiny::selectInput(
-            ns("dataset"), "Dataset", choices = NULL, selected = NULL
+            ns("dataset"), "Dataset", choices = NULL
           )
         ),
         shiny::column(
           width = 3,
           shiny::selectInput(
             ns("language_selected"), "Original Language",
-            choices = NULL, selected = NULL
+            choices = NULL,
           )
         ),
         shiny::column(
@@ -35,27 +35,11 @@ explore_ui <- function(ns) {
             ns("other_languages"),
             "Translation",
             choices = NULL,
-            selected = NULL,
             multiple = TRUE
           )
         )
       )
     ),
-
-    # htmltools::br(),
-
-    # shiny::fluidRow(
-    #   shiny::column(
-    #     width = 3,
-    #     shiny::checkboxInput(ns("check_autosample"), "Automatic Sampling", value = FALSE)
-    #   ),
-    #   shiny::column(
-    #     width = 3,
-    #     shiny::checkboxInput(ns("check_autotranslate"), "Automatic translation")
-    #   )
-    # ),
-
-    # htmltools::br(),
 
 
     shiny::conditionalPanel(

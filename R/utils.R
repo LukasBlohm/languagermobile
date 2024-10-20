@@ -21,7 +21,8 @@ submit_on_enter <- function(btn_id) {
 #'
 #' @noRd
 load_datasets <- function(file_name) {
-  suppressMessages(readr::read_csv(paste0("data_inputs/", file_name))) %>%
+  readr::read_csv(paste0("data_inputs/", file_name), show_col_types = FALSE) %>%
+    suppressMessages() %>%
     assign(x = paste0("df_", stringr::str_remove(file_name, ".csv")),
            envir = .GlobalEnv)
 }
@@ -39,10 +40,18 @@ load_datasets <- function(file_name) {
 #'
 #' @noRd
 generate_df_ui_labels <- function() {
-  stringr::str_remove(
-    names(.GlobalEnv)[stringr::str_starts(
-      names(.GlobalEnv), pattern = stringr::fixed("df_")
-  )], "df_")
+
+  v_names <- names(.GlobalEnv) %>%
+    purrr::keep(~ stringr::str_starts(.x, stringr::fixed("df_"))) %>%
+    stringr::str_remove("df_")
+
+  v_names
+  # c("dropbox", v_names[v_names != "dropbox"])
+
+  # stringr::str_remove(
+  #   names(.GlobalEnv)[stringr::str_starts(
+  #     names(.GlobalEnv), pattern = stringr::fixed("df_")
+  # )], "df_")
 }
 
 

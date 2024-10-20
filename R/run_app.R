@@ -28,10 +28,12 @@ run_app <- function(
   .GlobalEnv$token <- readRDS("token.rds")
   rdrop2::drop_download(
     .GlobalEnv$path_dropbox,
+    verbose = FALSE,
     overwrite = TRUE,
     dtoken = .GlobalEnv$token
     )
-  .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox)
+
+  .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox, show_col_types = FALSE)
 
   # Get names of the data frames in .GlobalEnv (which start with "df_")
   .GlobalEnv$v_df_names <- names(.GlobalEnv)[stringr::str_starts(names(.GlobalEnv), pattern = stringr::fixed("df_"))]

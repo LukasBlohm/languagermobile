@@ -134,27 +134,30 @@ mod_explore_server <- function(id){
 
     shiny::observe({
 
+      shiny::req(df_active())
+      shiny::req(input$other_languages)
+
       if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
         cli::cli_text("Show translation")
-        try(
-          expression_translated(
-            df_active()[df_active()[[input$language_selected]] == expression_original(),
-                        input$other_languages]
-          )
+
+        expression_translated(
+          df_active() %>%
+            dplyr::filter(
+              !! rlang::sym(input$language_selected) == expression_original()
+            ) %>%
+            dplyr::select(tidyselect::all_of(input$other_languages))
         )
 
-        try(
-          output$table <- shiny::renderTable({
-            shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
-            shiny::req(expression_translated())
+        output$table <- shiny::renderTable({
+          shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
+          shiny::req(expression_translated())
 
-            cli::cli_alert("Original expression: {expression_original()}")
-            cli::cli_alert("Translation: {expression_translated()}")
+          cli::cli_alert("Original expression: {expression_original()}")
+          cli::cli_alert("Translation: {expression_translated()}")
 
-            data.frame(Original = expression_original(),
-                       Translation = expression_translated())
-          }, width = "100%", align = "l")
-        )
+          data.frame(Original = expression_original(),
+                     Translation = expression_translated())
+        }, width = "100%", align = "l")
       } else {
         cli::cli_alert_info("Hide translation")
         output$table <- shiny::renderTable({
@@ -172,17 +175,18 @@ mod_explore_server <- function(id){
 
     shiny::observe({
 
+      shiny::req(expression_original())
+
       if (!input$check_automode && input$dataset %in% c("dropbox", "phone_notes")) {
 
-        # cli::cli_alert("Change priority")
+        current_priority <- df_active() %>%
+          dplyr::filter(!! rlang::sym(input$language_selected) == expression_original()) %>%
+          dplyr::pull("priority")
 
         shiny::updateSliderInput(
           session = session,
           "priority",
-          value = dplyr::pull(
-            df_active()[df_active()[[input$language_selected]] == expression_original(),
-                        "priority"]
-            )
+          value = current_priority
         )
       }
     })
