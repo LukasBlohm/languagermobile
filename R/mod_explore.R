@@ -29,6 +29,10 @@ mod_explore_server <- function(id){
     df_active <- shiny::reactiveVal(tibble::tibble())
     expression_original <- shiny::reactiveVal("")
     expression_translated <- shiny::reactiveVal("")
+    has_priority <- shiny::reactiveVal(NA)
+    priority_initial <- shiny::reactiveVal(NA_integer_)
+    priority_current <- shiny::reactiveVal(NA_integer_)
+    df_display_all <- shiny::reactiveVal(data.frame())
 
     shiny::updateSelectInput(
       session = session,
@@ -65,6 +69,8 @@ mod_explore_server <- function(id){
       df_name <- paste0("df_", input$dataset)
 
       df_active(.GlobalEnv[[df_name]])
+
+      has_priority("priority" %in% colnames(df_active()) & expression_original() != "")
     })
 
     list_reactives <- shiny::reactiveValues(
@@ -73,11 +79,11 @@ mod_explore_server <- function(id){
 
     # Update hidden text input to control appearance of the priority slider
     shiny::observe({
-      has_priority <- "priority" %in% colnames(df_active()) & expression_original() != ""
+      # has_priority <- "priority" %in% colnames(df_active()) & expression_original() != ""
 
       shiny::updateTextInput(
         session, "has_priority",
-        value = ifelse(has_priority, "true", "false")
+        value = ifelse(has_priority(), "true", "false")
         )
     })
 
@@ -90,7 +96,7 @@ mod_explore_server <- function(id){
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
-        if ("priority" %in% colnames(df_active())) {
+        if (has_priority()) {
           expression_original(
             dplyr::slice_sample(
               df_active(),
@@ -107,14 +113,47 @@ mod_explore_server <- function(id){
       }
     })
 
+
+    # input$btn_load ----------------------------------------------------------
+
     shiny::observeEvent(input$btn_load, {
 
-      cli::cli_alert("Manual Sample")
       list_reactives$show_translation <- FALSE
 
-      expression_original(
-        sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
-      )
+      cli::cli_alert("priority_initial() old sample: {priority_initial()}")
+      cli::cli_alert("priority_current() old sample: {priority_current()}")
+
+      # Equal when priority_update is not NA
+      if (has_priority() && isTRUE(priority_initial() != priority_current())) {
+        cli::cli_alert_info("Save priority update")
+        readr::write_csv(df_active(), .GlobalEnv$path_dropbox)
+        suppressWarnings(rdrop2::drop_upload(
+          .GlobalEnv$path_dropbox, mode = "overwrite" #, dtoken = .GlobalEnv$token
+        ))
+      }
+
+      expression_original <- sample(
+        x = dplyr::pull(df_active()[, input$language_selected]),
+        size = 1
+        )
+
+      cli::cli_alert("Manual Sample: {expression_original}")
+
+      expression_original(expression_original )
+
+      if (has_priority()) {
+
+        priority_initial <- df_active() %>%
+          dplyr::filter(
+            !! rlang::sym(input$language_selected) == expression_original
+          ) %>%
+          dplyr::pull("priority")
+
+
+        cli::cli_alert("priority_initial() new sample: {priority_initial}")
+
+        priority_initial(priority_initial)
+      }
     })
 
 
@@ -132,9 +171,14 @@ mod_explore_server <- function(id){
       expression_original("")
     })
 
+
+    # Translation handling ----------------------------------------------------
+
     shiny::observe({
 
       shiny::req(df_active())
+      shiny::req(expression_original())
+      # shiny::req(expression_translated())
       shiny::req(input$other_languages)
 
       if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
@@ -145,8 +189,15 @@ mod_explore_server <- function(id){
             dplyr::filter(
               !! rlang::sym(input$language_selected) == expression_original()
             ) %>%
-            dplyr::select(tidyselect::all_of(input$other_languages))
+            dplyr::select(tidyselect::any_of(input$other_languages))
         )
+
+        df_display_current <- data.frame(
+          Original = expression_original(),
+          Translation = expression_translated()
+          )
+
+        df_display_all(dplyr::bind_rows(shiny::isolate(df_display_all()), df_display_current))
 
         output$table <- shiny::renderTable({
           shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
@@ -155,8 +206,8 @@ mod_explore_server <- function(id){
           cli::cli_alert("Original expression: {expression_original()}")
           cli::cli_alert("Translation: {expression_translated()}")
 
-          data.frame(Original = expression_original(),
-                     Translation = expression_translated())
+          df_display_current
+
         }, width = "100%", align = "l")
       } else {
         cli::cli_alert_info("Hide translation")
@@ -170,26 +221,42 @@ mod_explore_server <- function(id){
       }
     })
 
+    output$table_history <- shiny::renderTable({
+      shiny::req(df_display_all())
 
-    # new priority slider -----------------------------------------------------
+      if (nrow(df_display_all()) > 0) {
+        df_display_all()
+      }
 
-    shiny::observe({
+
+    }, width = "100%", align = "l")
+
+
+    # update priority slider -----------------------------------------------------
+
+    shiny::observeEvent(expression_original(), {
 
       shiny::req(expression_original())
 
       if (!input$check_automode && input$dataset %in% c("dropbox", "phone_notes")) {
 
-        current_priority <- df_active() %>%
+        priority_current <- df_active() %>%
           dplyr::filter(!! rlang::sym(input$language_selected) == expression_original()) %>%
           dplyr::pull("priority")
+
 
         shiny::updateSliderInput(
           session = session,
           "priority",
-          value = current_priority
+          value = priority_current
         )
+
+        priority_current(priority_current)
       }
     })
+
+
+    # update priority in data -------------------------------------------------
 
     shiny::observeEvent(input$priority, {
 
@@ -203,10 +270,7 @@ mod_explore_server <- function(id){
           )
         )
 
-      readr::write_csv(df, .GlobalEnv$path_dropbox)
-      rdrop2::drop_upload(
-        .GlobalEnv$path_dropbox, mode = "overwrite", dtoken = .GlobalEnv$token
-        )
+      priority_current(input$priority)
 
       # Update df_active
       df_active(df)

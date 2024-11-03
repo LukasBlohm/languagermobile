@@ -24,16 +24,29 @@ run_app <- function(
   # Read the datasets
   purrr::walk(file_names, load_datasets)
 
-  rdrop2::drop_auth(rdstoken = "token.rds")
-  .GlobalEnv$token <- readRDS("token.rds")
-  rdrop2::drop_download(
-    .GlobalEnv$path_dropbox,
-    verbose = FALSE,
-    overwrite = TRUE,
-    dtoken = .GlobalEnv$token
-    )
+  # .GlobalEnv$token <- readRDS("token.rds")
 
-  .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox, show_col_types = FALSE)
+  rlang::try_fetch(
+    {
+      rdrop2::drop_auth()
+      # rdrop2::drop_auth(rdstoken = "token.rds")
+      rdrop2::drop_download(
+        .GlobalEnv$path_dropbox,
+        verbose = FALSE,
+        overwrite = TRUE
+        # ,
+        # dtoken = .GlobalEnv$token
+      )
+      .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox, show_col_types = FALSE)
+      },
+    error = \(cnd) {
+      cli::cli_alert_warning("Dropbox token expired.")
+      # rdrop2::drop_auth(new_user = TRUE, rdstoken = "token.rds")
+      # token <- rdrop2::drop_auth()
+      # saveRDS(token, file = "token.rds")
+    }
+  )
+
 
   # Get names of the data frames in .GlobalEnv (which start with "df_")
   .GlobalEnv$v_df_names <- names(.GlobalEnv)[stringr::str_starts(names(.GlobalEnv), pattern = stringr::fixed("df_"))]

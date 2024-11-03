@@ -154,8 +154,15 @@ explore_ui <- function(ns) {
           min = 1, max = 5, step = 1
         )
       )
-    )
+    ),
 
+    shinyMobile::f7Card(
+      outline = TRUE,
+      raised = TRUE,
+      divider = TRUE,
+      full_screen = TRUE,
+      shiny::tableOutput(ns("table_history"))
+      )
   )
 }
 
