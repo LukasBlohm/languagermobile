@@ -62,7 +62,7 @@ mod_explore_server <- function(id){
       )
     })
 
-    shiny::observe({
+    shiny::observeEvent(input$dataset, {
       shiny::req(paste0("df_", input$dataset))
       cli::cli_h2("Activate dataset {input$dataset}")
 
@@ -79,8 +79,6 @@ mod_explore_server <- function(id){
 
     # Update hidden text input to control appearance of the priority slider
     shiny::observe({
-      # has_priority <- "priority" %in% colnames(df_active()) & expression_original() != ""
-
       shiny::updateTextInput(
         session, "has_priority",
         value = ifelse(has_priority(), "true", "false")
@@ -187,11 +185,13 @@ mod_explore_server <- function(id){
 
       shiny::req(df_active())
       shiny::req(expression_original())
-      # shiny::req(expression_translated())
       shiny::req(input$other_languages)
 
       if (list_reactives$show_translation || input$check_automode || input$check_autotranslate) {
-        cli::cli_text("Show translation")
+
+        if (!input$check_automode || !input$check_autotranslate) {
+          cli::cli_text("Show translation")
+        }
 
         expression_translated(
           df_active() %>%
