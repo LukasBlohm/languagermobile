@@ -32,7 +32,7 @@ mod_explore_server <- function(id){
     has_priority <- shiny::reactiveVal(NA)
     priority_initial <- shiny::reactiveVal(NA_integer_)
     priority_current <- shiny::reactiveVal(NA_integer_)
-    df_display_all <- shiny::reactiveVal(data.frame())
+    df_sample_history <- shiny::reactiveVal(data.frame())
 
     shiny::updateSelectInput(
       session = session,
@@ -96,10 +96,19 @@ mod_explore_server <- function(id){
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
+        v_expr_history <- rlang::try_fetch(
+          dplyr::pull(shiny::isolate(df_sample_history()), "Original"),
+          error = \(cnd) character()
+        )
+
+        df_to_sample <- df_active() %>%
+          dplyr::filter(! (!!rlang::sym(input$language_selected)) %in% v_expr_history)
+
         if (has_priority()) {
+
           expression_original(
             dplyr::slice_sample(
-              df_active(),
+              df_to_sample,
               weight_by = priority,
               n = 1
             ) %>%
@@ -107,7 +116,7 @@ mod_explore_server <- function(id){
           )
         } else {
           expression_original(
-            sample(x = dplyr::pull(df_active()[, input$language_selected]), size = 1)
+            sample(x = dplyr::pull(df_to_sample[, input$language_selected]), size = 1)
           )
         }
       }
@@ -197,7 +206,12 @@ mod_explore_server <- function(id){
           Translation = expression_translated()
           )
 
-        df_display_all(dplyr::bind_rows(shiny::isolate(df_display_all()), df_display_current))
+        df_sample_history(
+          dplyr::bind_rows(
+            shiny::isolate(df_sample_history()), df_display_current
+            ) %>%
+            dplyr::distinct()
+          )
 
         output$table <- shiny::renderTable({
           shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
@@ -222,10 +236,10 @@ mod_explore_server <- function(id){
     })
 
     output$table_history <- shiny::renderTable({
-      shiny::req(df_display_all())
+      shiny::req(df_sample_history())
 
-      if (nrow(df_display_all()) > 0) {
-        df_display_all()
+      if (nrow(df_sample_history()) > 0) {
+        df_sample_history()
       }
 
 
