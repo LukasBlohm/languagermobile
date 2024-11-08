@@ -28,7 +28,6 @@ mod_explore_server <- function(id){
 
     df_active <- shiny::reactiveVal(tibble::tibble())
     expression_original <- shiny::reactiveVal("")
-    expression_translated <- shiny::reactiveVal("")
     has_priority <- shiny::reactiveVal(NA)
     priority_initial <- shiny::reactiveVal(NA_integer_)
     priority_current <- shiny::reactiveVal(NA_integer_)
@@ -194,18 +193,13 @@ mod_explore_server <- function(id){
           cli::cli_text("Show translation")
         }
 
-        expression_translated(
-          df_active() %>%
+        df_display_current <- df_active() %>%
             dplyr::filter(
               !! rlang::sym(input$language_selected) == expression_original()
             ) %>%
-            dplyr::select(tidyselect::any_of(input$other_languages))
-        )
-
-        df_display_current <- data.frame(
-          Original = expression_original(),
-          Translation = expression_translated()
-          )
+            dplyr::select(
+              tidyselect::any_of(c(input$language_selected, input$other_languages))
+              )
 
         df_sample_history(
           dplyr::bind_rows(
@@ -215,11 +209,8 @@ mod_explore_server <- function(id){
           )
 
         output$table <- shiny::renderTable({
-          shiny::req(expression_original())  # Prevent error when show_translation is pressed but no sentence has been sampled yet.
-          shiny::req(expression_translated())
-
-          cli::cli_alert("Original expression: {expression_original()}")
-          cli::cli_alert("Translation: {expression_translated()}")
+          shiny::req(expression_original())
+          # cli::cli_alert("Original expression: {expression_original()}")
 
           df_display_current
 
