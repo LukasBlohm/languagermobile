@@ -46,20 +46,12 @@ generate_df_ui_labels <- function() {
     stringr::str_remove("df_")
 
   v_names
-  # c("dropbox", v_names[v_names != "dropbox"])
-
-  # stringr::str_remove(
-  #   names(.GlobalEnv)[stringr::str_starts(
-  #     names(.GlobalEnv), pattern = stringr::fixed("df_")
-  # )], "df_")
 }
 
 
 #' Get languages
 #'
 #' @param input
-#'
-#' @importFrom magrittr %>%
 #'
 #' @return A character vector of names of columns that correspond to a language
 #'
@@ -70,14 +62,5 @@ get_languages <- function(input) {
 
   df[stringr::str_detect(df, "^FR|^EN|^DE")]
 }
-
-
-
-
-
-
-
-
-
 
 

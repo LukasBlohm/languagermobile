@@ -55,41 +55,37 @@ mod_vocab_server <- function(id){
   shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    shiny::observe({
-      if (isTRUE(shiny::isolate(shinybrowser::is_device_mobile()))) {
-        cli::cli_alert_info("Mobile")
-      } else {
-        cli::cli_alert_info("Desktop")
-      }
-    })
-    output$result <- shiny::renderText({
-      shinybrowser::is_device_mobile()
-    })
-    # if (isTRUE(shinybrowser::is_device_mobile())) {
-    #   message("Mobile")
-    # } else {
-    #   message("Desktop")
-    # }
-
-
-    vocab_data <- .GlobalEnv$df_vocab
-
     list_reactives <- shiny::reactiveValues(
       user_word = FALSE,
       other_language = "EN"
     )
     word_to_translate <- shiny::reactiveVal("")
 
+
     shiny::observe({
-      # print(input$language_1)
-      if (input$language_1 == "FR") {
-        cli::cli_alert_info("Language 1 set to FR, language 2 set to EN")
-        list_reactives$other_language <- "EN"
-      } else {
-        cli::cli_alert_info("Language 1 set to EN, language 2 set to FR")
-        list_reactives$other_language <- "FR"
-      }
+
+      v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data ) %>%
+        purrr::keep(~ .x %in% c("FR", "DE", "EN"))
+
+      shiny::updateSelectInput(
+        session = session,
+        "language_1",
+        choices = v_languages,
+        selected = v_languages %>%
+          purrr::discard(~ .x %in% c(list_reactives$other_language))
+      )
     })
+
+
+    shiny::observe({
+
+      list_reactives$other_language <- colnames(.GlobalEnv$quiz_data$vocab_data ) %>%
+        purrr::keep(~ .x %in% c("FR", "DE", "EN")) %>%
+        purrr::discard(~ .x %in% c(input$language_1))
+
+      cli::cli_alert_info("Language 1 set to {input$language_1}, language 2 set to {list_reactives$other_language}.")
+    })
+
 
     output$user_word <- shiny::reactive({
       list_reactives$user_word
@@ -114,7 +110,10 @@ mod_vocab_server <- function(id){
 
     shiny::observeEvent(input$btn_get_word_to_translate, {
       word_to_translate(
-        dplyr::pull(dplyr::slice_sample(vocab_data[, input$language_1], n = 1))
+        .GlobalEnv$quiz_data$vocab_data  %>%
+          dplyr::select(tidyselect::all_of(input$language_1)) %>%
+          dplyr::slice_sample(n = 1) %>%
+          dplyr::pull()
       )
       cli::cli_alert("Sampled random word {word_to_translate()}")
     })
@@ -151,10 +150,10 @@ mod_vocab_server <- function(id){
 
       shiny::req(word_to_translate())  # Prevent error when submit is pressed but no sentence has been sampled yet.
 
-      real_translation <- vocab_data[vocab_data[, input$language_1] == word_to_translate(), list_reactives$other_language]
-
-      # print(paste0("input$guess: ", input$guess))
-      # print(paste0("real_translation: ", real_translation))
+      # real_translation <- vocab_data$vocab_data [vocab_data$vocab_data [, input$language_1] == word_to_translate(), list_reactives$other_language]
+      real_translation <- .GlobalEnv$quiz_data$vocab_data  %>%
+        dplyr::filter(!! rlang::sym(input$language_1) == word_to_translate()) %>%
+        dplyr::pull(list_reactives$other_language)
 
       # cli::cli_alert("Correct submission = {input$guess %in% real_translation}") # there can be more than 1 correct translation, e.g. temps = time and weather
 
@@ -175,7 +174,7 @@ mod_vocab_server <- function(id){
         output$feedback <- shiny::renderText({
           cli::cli_alert("Incorrect submission")
           paste0("Incorrect. The actual translation is ", real_translation)
-          })
+        })
 
         output$word_display <- shiny::renderTable({
           cli::cli_alert("Show word to translate")

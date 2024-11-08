@@ -28,16 +28,22 @@ run_app <- function(
 
   rlang::try_fetch(
     {
-      rdrop2::drop_auth()
+      # .GlobalEnv$df_dropbox <- rdrop2::drop_read_csv(
+      #   .GlobalEnv$path_dropbox
+      # )
+
+
+      # rdrop2::drop_auth()
       # rdrop2::drop_auth(rdstoken = "token.rds")
       rdrop2::drop_download(
         .GlobalEnv$path_dropbox,
         verbose = FALSE,
-        overwrite = TRUE
-        # ,
-        # dtoken = .GlobalEnv$token
+        overwrite = TRUE,
+        dtoken = .GlobalEnv$token
       )
-      .GlobalEnv$df_dropbox <- readr::read_csv(.GlobalEnv$path_dropbox, show_col_types = FALSE)
+      .GlobalEnv$df_dropbox <- readr::read_csv(
+        .GlobalEnv$path_dropbox, show_col_types = FALSE
+        )
       },
     error = \(cnd) {
       cli::cli_alert_warning("Dropbox token expired.")
@@ -57,6 +63,8 @@ run_app <- function(
     ) %>%
     purrr::set_names(v_df_names)
 
+
+  .GlobalEnv$quiz_data <- shiny::reactiveValues(vocab_data = data.frame())
 
   with_golem_options(
     app = shinyApp(

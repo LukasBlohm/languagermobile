@@ -135,7 +135,8 @@ mod_explore_server <- function(id){
         cli::cli_alert_info("Save priority update")
         readr::write_csv(df_active(), .GlobalEnv$path_dropbox)
         suppressWarnings(rdrop2::drop_upload(
-          .GlobalEnv$path_dropbox, mode = "overwrite" #, dtoken = .GlobalEnv$token
+          .GlobalEnv$path_dropbox, mode = "overwrite",
+          dtoken = .GlobalEnv$token
         ))
       }
 
@@ -288,6 +289,23 @@ mod_explore_server <- function(id){
 
       # Update df_active
       df_active(df)
+    })
+
+    shiny::observeEvent(df_sample_history(), {
+
+      shiny::req(input$language_selected)
+      shiny::req(input$other_languages)
+      shiny::req(df_sample_history())
+
+      vocab_data <- df_sample_history() %>%
+        dplyr::select(
+          tidyselect::any_of(c("Original", input$language_selected, input$other_languages))
+          )
+
+      colnames(vocab_data)[1] <- input$language_selected
+
+      .GlobalEnv$quiz_data$vocab_data <- vocab_data
+      cli::cli_alert_info("Update vocab data")
     })
   })
 }
