@@ -5,15 +5,23 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
-#'
-#' @importFrom shiny NS tagList
 mod_vocab_ui <- function(id){
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
   bslib::page_sidebar(
 
     sidebar = bslib::sidebar(
-      shiny::selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
+      shiny::selectInput(
+        ns("language_1"), "Original Language", choices = c("EN", "FR")
+        ),
+
+      shiny::selectInput(
+        ns("language_2"),
+        "Translation",
+        choices = NULL,
+        multiple = FALSE
+      ),
+
       shiny::radioButtons(
         ns("word_source"), "Word Source:",
         choices = c("Random", "User Choice"),
@@ -53,7 +61,7 @@ mod_vocab_server <- function(id){
 
     list_reactives <- shiny::reactiveValues(
       user_word = FALSE,
-      other_language = "EN"
+      other_languages = character() # "EN"
     )
     word_to_translate <- shiny::reactiveVal("")
 
@@ -71,17 +79,26 @@ mod_vocab_server <- function(id){
         "language_1",
         choices = v_languages,
         selected = v_languages %>%
-          purrr::discard(~ .x %in% c(list_reactives$other_language))
+          purrr::discard(~ .x %in% c(list_reactives$other_languages))
       )
     })
 
+    shiny::observe({
+
+      shiny::updateSelectInput(
+        session = session,
+        "language_2",
+        choices = list_reactives$other_languages,
+        selected = NULL
+      )
+    })
 
     shiny::observe({
-      list_reactives$other_language <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
+      list_reactives$other_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN")) %>%
         purrr::discard(~ .x %in% c(input$language_1))
 
-      cli::cli_alert_info("Language 1 set to {input$language_1}, language 2 set to {list_reactives$other_language}.")
+      cli::cli_alert_info("Language 1 set to {input$language_1}, other languages {?is/are} {list_reactives$other_languages}.")
     })
 
 
@@ -148,10 +165,9 @@ mod_vocab_server <- function(id){
 
       shiny::req(word_to_translate())  # Prevent error when submit is pressed but no sentence has been sampled yet.
 
-      # real_translation <- vocab_data$vocab_data [vocab_data$vocab_data [, input$language_1] == word_to_translate(), list_reactives$other_language]
       real_translation <- .GlobalEnv$quiz_data$vocab_data  %>%
         dplyr::filter(!! rlang::sym(input$language_1) == word_to_translate()) %>%
-        dplyr::pull(list_reactives$other_language)
+        dplyr::pull(input$language_2)
 
       # cli::cli_alert("Correct submission = {input$guess %in% real_translation}") # there can be more than 1 correct translation, e.g. temps = time and weather
 
