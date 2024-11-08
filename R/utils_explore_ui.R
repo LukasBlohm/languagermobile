@@ -162,7 +162,17 @@ explore_ui <- function(ns) {
       divider = TRUE,
       full_screen = TRUE,
       shiny::tableOutput(ns("table_history"))
-      )
+      ),
+
+    shinyMobile::f7Card(
+      outline = TRUE,
+      raised = TRUE,
+      divider = TRUE,
+      full_screen = TRUE,
+      shiny::actionButton(
+        ns("clear_table_history"), "Clear history"
+        )
+    )
   )
 }
 

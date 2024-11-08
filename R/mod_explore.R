@@ -297,15 +297,27 @@ mod_explore_server <- function(id){
       shiny::req(input$other_languages)
       shiny::req(df_sample_history())
 
-      vocab_data <- df_sample_history() %>%
-        dplyr::select(
-          tidyselect::any_of(c("Original", input$language_selected, input$other_languages))
+      if (nrow(df_sample_history()) > 1) {
+        vocab_data <- df_sample_history() %>%
+          dplyr::select(
+            tidyselect::any_of(c("Original", input$language_selected, input$other_languages))
           )
 
-      colnames(vocab_data)[1] <- input$language_selected
+        if (nrow(df_sample_history()) > 0) {
+          colnames(vocab_data)[1] <- input$language_selected
+        }
 
-      .GlobalEnv$quiz_data$vocab_data <- vocab_data
-      cli::cli_alert_info("Update vocab data")
+        .GlobalEnv$quiz_data$vocab_data <- vocab_data
+        cli::cli_alert_info("Update vocab data")
+      }
+    })
+
+    shiny::observeEvent(input$clear_table_history, {
+      cli::cli_alert_info("Clear history data")
+      df_sample_history(data.frame())
+      .GlobalEnv$quiz_data$vocab_data <- df_dropbox_static
+      cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
+
     })
   })
 }

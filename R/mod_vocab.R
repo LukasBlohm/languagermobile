@@ -14,9 +14,12 @@ mod_vocab_ui <- function(id){
 
     sidebar = bslib::sidebar(
       shiny::selectInput(ns("language_1"), "Original Language", choices = c("EN", "FR")),
-      shiny::radioButtons(ns("word_source"), "Word Source:",
-                          choices = c("Random", "User Choice"),
-                          selected = "Random"),
+      shiny::radioButtons(
+        ns("word_source"), "Word Source:",
+        choices = c("Random", "User Choice"),
+        selected = "Random"
+        ),
+
       shiny::conditionalPanel(
         condition = "output.user_word",
         ns = ns,
@@ -38,13 +41,6 @@ mod_vocab_ui <- function(id){
       shiny::tableOutput(ns("word_display")),
       shiny::uiOutput(ns("feedback"))
     )
-    # ,
-    # bslib::card(
-    #   full_screen = TRUE,
-    #   # shinybrowser::detect(),
-    #   "Are you on mobile?",
-    #   shiny::textOutput(ns("result"))
-    # )
   )
 }
 
@@ -64,7 +60,9 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
 
-      v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data ) %>%
+      cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
+
+      v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN"))
 
       shiny::updateSelectInput(
@@ -78,8 +76,7 @@ mod_vocab_server <- function(id){
 
 
     shiny::observe({
-
-      list_reactives$other_language <- colnames(.GlobalEnv$quiz_data$vocab_data ) %>%
+      list_reactives$other_language <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN")) %>%
         purrr::discard(~ .x %in% c(input$language_1))
 
