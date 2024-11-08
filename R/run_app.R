@@ -19,7 +19,7 @@ run_app <- function(
   source("R/app_global.R")
 
   # Get names of all .csv files in data_inputs/
-  file_names <- dir("data_inputs", pattern = "\\.csv$")
+  file_names <- dir("data", pattern = "\\.csv$")
 
   # Read the datasets
   purrr::walk(file_names, load_datasets)

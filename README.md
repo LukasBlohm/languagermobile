@@ -13,7 +13,7 @@ The App currently consists of three modules:
 
 ### Explorer and Vocab
 
-The first two modules allow / require the use of custom .csv files that store the data. The app automatically handles such files if they are placed in the `data_inputs/` directory. These files should contain columns for the expressions of each language, e.g. `FR` and `EN` for French and English expressions. Multiple such files can be supplied at the same time; the one to work with can be selected / switched while using the app.
+The first two modules allow / require the use of custom .csv files that store the data. The app automatically handles such files if they are placed in the `data` directory. These files should contain columns for the expressions of each language, e.g. `FR` and `EN` for French and English expressions. Multiple such files can be supplied at the same time; the one to work with can be selected / switched while using the app.
 
 
 ## Installation

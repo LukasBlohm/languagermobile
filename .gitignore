@@ -2,6 +2,7 @@
 .Rhistory
 .Rproj.user
 *.csv
+!data/vocab_test.csv
 *.numbers
 *.pdf
 *.xlsx

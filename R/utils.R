@@ -21,7 +21,7 @@ submit_on_enter <- function(btn_id) {
 #'
 #' @noRd
 load_datasets <- function(file_name) {
-  readr::read_csv(paste0("data_inputs/", file_name), show_col_types = FALSE) %>%
+  readr::read_csv(paste0("data/", file_name), show_col_types = FALSE) %>%
     suppressMessages() %>%
     assign(x = paste0("df_", stringr::str_remove(file_name, ".csv")),
            envir = .GlobalEnv)
