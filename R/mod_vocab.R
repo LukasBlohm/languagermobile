@@ -60,7 +60,8 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
 
-      cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
+      # cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
+      info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
 
       v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN"))

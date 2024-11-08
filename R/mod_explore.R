@@ -308,16 +308,15 @@ mod_explore_server <- function(id){
         }
 
         .GlobalEnv$quiz_data$vocab_data <- vocab_data
-        cli::cli_alert_info("Update vocab data")
+        success("Update vocab data")
       }
     })
 
     shiny::observeEvent(input$clear_table_history, {
-      cli::cli_alert_info("Clear history data")
+      info("Clear history data")
       df_sample_history(data.frame())
       .GlobalEnv$quiz_data$vocab_data <- df_dropbox_static
-      cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
-
+      info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
     })
   })
 }
