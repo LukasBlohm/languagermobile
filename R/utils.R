@@ -64,27 +64,21 @@ get_languages <- function(input) {
 }
 
 
-info <- function(msg, call = rlang::caller_env()) {
-  cli::cli_alert_info(paste(get("id", envir = call), "-", msg), .envir = call)
-}
 
+create_message_function <- function(type) {
 
-create_message_function <- function(type = c("info", "success", "warning", "danger")) {
-  type = rlang::arg_match(type)
+  fn_name <- paste0("cli_alert", ifelse(type != "alert", paste0("_", type), ""))
 
   message_function <- function(msg, call = rlang::caller_env()) {
-    cli_function <- get(paste0("cli_alert_", type), envir = asNamespace("cli"))
-    eval(call("cli_function", paste(get("id", envir = call), "-", msg), .envir = call))
+    id_prefix <- rlang::try_fetch(paste(get("id", envir = call), "-"), error = \(cnd) "")
+    cli_function <- get(fn_name, envir = asNamespace("cli"))
+    eval(call("cli_function", paste(id_prefix, msg), .envir = call))
   }
-  message_function
+  assign(type, message_function, .GlobalEnv)
 }
 
-info <- create_message_function("info")
-success <- create_message_function("success")
-warn <- create_message_function("warning")
-danger <- create_message_function("danger")
 
-
+purrr::walk(c("alert", "info", "success", "warning", "danger"), create_message_function)
 
 
 

@@ -68,7 +68,6 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
 
-      # cli::cli_alert_info("{ns(id)} - colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
       info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
 
       v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
@@ -98,7 +97,7 @@ mod_vocab_server <- function(id){
         purrr::keep(~ .x %in% c("FR", "DE", "EN")) %>%
         purrr::discard(~ .x %in% c(input$language_1))
 
-      cli::cli_alert_info("Language 1 set to {input$language_1}, other languages {?is/are} {list_reactives$other_languages}.")
+      info("Language 1 set to {input$language_1}, other languages {?is/are} {list_reactives$other_languages}.")
     })
 
 
@@ -111,10 +110,10 @@ mod_vocab_server <- function(id){
 
     shiny::observe({
       if (input$word_source == "User Choice") {
-        cli::cli_alert_info("Set input source to User Choice")
+        info("Set input source to User Choice")
         list_reactives$user_word <- TRUE
       } else {
-        cli::cli_alert_info("Set input source to Random")
+        info("Set input source to Random")
         list_reactives$user_word <- FALSE
       }
     })
@@ -130,7 +129,7 @@ mod_vocab_server <- function(id){
           dplyr::slice_sample(n = 1) %>%
           dplyr::pull()
       )
-      cli::cli_alert("Sampled random word {word_to_translate()}")
+      alert("Sampled random word {word_to_translate()}")
     })
 
 
@@ -169,29 +168,29 @@ mod_vocab_server <- function(id){
         dplyr::filter(!! rlang::sym(input$language_1) == word_to_translate()) %>%
         dplyr::pull(input$language_2)
 
-      # cli::cli_alert("Correct submission = {input$guess %in% real_translation}") # there can be more than 1 correct translation, e.g. temps = time and weather
+      # alert("Correct submission = {input$guess %in% real_translation}") # there can be more than 1 correct translation, e.g. temps = time and weather
 
       if (input$guess %in% real_translation) {
-        cli::cli_alert_success("Correct submission")
+        success("Correct submission")
         output$feedback <- shiny::renderText({"Correct!"})
 
         # Clear text input
         shiny::updateTextInput(session, "guess", value = "")
 
         output$word_display <- shiny::renderTable({
-          cli::cli_alert("Show word to translate")
+          alert("Show word to translate")
           data.frame(Word = word_to_translate(),
                      Translation = real_translation)
         }, width = "60%")
 
       } else {
         output$feedback <- shiny::renderText({
-          cli::cli_alert("Incorrect submission")
+          alert("Incorrect submission")
           paste0("Incorrect. The actual translation is ", real_translation)
         })
 
         output$word_display <- shiny::renderTable({
-          cli::cli_alert("Show word to translate")
+          alert("Show word to translate")
           data.frame(Word = word_to_translate())
         }, width = "60%")
       }

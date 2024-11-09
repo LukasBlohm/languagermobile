@@ -89,7 +89,7 @@ mod_explore_server <- function(id){
 
       if (input$check_automode) {
 
-        cli::cli_alert("Automatic sample")
+        alert("Automatic sample")
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
@@ -126,12 +126,12 @@ mod_explore_server <- function(id){
 
       list_reactives$show_translation <- FALSE
 
-      cli::cli_alert("priority_initial() old sample: {priority_initial()}")
-      cli::cli_alert("priority_current() old sample: {priority_current()}")
+      alert("priority_initial() old sample: {priority_initial()}")
+      alert("priority_current() old sample: {priority_current()}")
 
       # Equal when priority_update is not NA
       if (has_priority() && isTRUE(priority_initial() != priority_current())) {
-        cli::cli_alert_info("Save priority update")
+        info("Save priority update")
         readr::write_csv(df_active(), .GlobalEnv$path_dropbox)
         suppressWarnings(rdrop2::drop_upload(
           .GlobalEnv$path_dropbox, mode = "overwrite",
@@ -144,7 +144,7 @@ mod_explore_server <- function(id){
         size = 1
         )
 
-      cli::cli_alert("Manual Sample: {expression_original}")
+      alert("Manual Sample: {expression_original}")
 
       expression_original(expression_original )
 
@@ -157,7 +157,7 @@ mod_explore_server <- function(id){
           dplyr::pull("priority")
 
 
-        cli::cli_alert("priority_initial() new sample: {priority_initial}")
+        alert("priority_initial() new sample: {priority_initial}")
 
         priority_initial(priority_initial)
       }
@@ -210,16 +210,16 @@ mod_explore_server <- function(id){
 
         output$table <- shiny::renderTable({
           shiny::req(expression_original())
-          # cli::cli_alert("Original expression: {expression_original()}")
+          # alert("Original expression: {expression_original()}")
 
           df_display_current
 
         }, width = "100%", align = "l")
       } else {
-        cli::cli_alert_info("Hide translation")
+        info("Hide translation")
         output$table <- shiny::renderTable({
 
-          cli::cli_alert("Original expression: {expression_original()}")
+          alert("Original expression: {expression_original()}")
 
           data.frame(Original = expression_original(),
                      Translation = "")
