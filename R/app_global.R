@@ -1,5 +1,4 @@
 
-rdrop2::drop_auth(rdstoken = "droptoken.rds")
 
 path_dropbox <- "dropbox_notes.csv"
 
@@ -54,5 +53,14 @@ drop_auth_RT <- function(
 }
 
 
+rlang::try_fetch(
+  {
+    .GlobalEnv$token <- drop_auth_RT(rdstoken = "droptoken.rds")
+    rdrop2::drop_auth(rdstoken = "droptoken.rds")
+  },
+  error = \(cnd) {
+    cli::cli_alert_info("Skip dropbox")
+  }
+)
 
-.GlobalEnv$token <- drop_auth_RT(rdstoken = "droptoken.rds")
+
