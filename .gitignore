@@ -8,6 +8,7 @@
 *.xlsx
 .Renviron
 dev/
+!dev/run_dev.R
 data_pdf/
 data_raw/
 rsconnect/
