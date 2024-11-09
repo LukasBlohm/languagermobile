@@ -52,6 +52,9 @@ drop_auth_RT <- function(
   }
 }
 
+# Once
+# drop_auth_RT(rdstoken = "droptoken.rds", new_user = TRUE)
+# saveRDS(.dstate$token, "droptoken.rds")
 
 rlang::try_fetch(
   {
