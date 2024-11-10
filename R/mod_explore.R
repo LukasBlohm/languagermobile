@@ -129,8 +129,8 @@ mod_explore_server <- function(id){
       if (has_priority()) {
         # alert("priority_initial() old sample: {priority_initial()}")
         # alert("priority_current() old sample: {priority_current()}")
-        show_content(priority_initial())
-        show_content(priority_current())
+        show_vector(priority_initial())
+        show_vector(priority_current())
 
         # Equal when priority_update is not NA
         if (isTRUE(priority_initial() != priority_current())) {
@@ -162,7 +162,7 @@ mod_explore_server <- function(id){
 
 
         # alert("priority_initial() new sample: {priority_initial}")
-        show_content(priority_initial())
+        show_vector(priority_initial())
 
         priority_initial(priority_initial)
       }
@@ -314,7 +314,7 @@ mod_explore_server <- function(id){
       df_sample_history(data.frame())
       .GlobalEnv$quiz_data$vocab_data <- df_dropbox_static
       #info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
-      show_content(colnames(.GlobalEnv$quiz_data$vocab_data))
+      show_vector(colnames(.GlobalEnv$quiz_data$vocab_data))
     })
   })
 }

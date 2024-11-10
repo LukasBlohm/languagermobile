@@ -75,7 +75,7 @@ mod_quiz_server <- function(id){
 
       shiny::req(nrow(.GlobalEnv$quiz_data$vocab_data) > 0)
 
-      info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
+      show_vector(colnames(.GlobalEnv$quiz_data$vocab_data))
 
       v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN"))
@@ -121,12 +121,16 @@ mod_quiz_server <- function(id){
 
 
     shiny::observeEvent(input$btn_get_word_to_translate, {
+
+      shiny::req(nrow(.GlobalEnv$quiz_data$vocab_data) > 0)
+
       word_to_translate(
-        .GlobalEnv$quiz_data$vocab_data  %>%
+        .GlobalEnv$quiz_data$vocab_data %>%
           dplyr::select(tidyselect::all_of(input$language_1)) %>%
           dplyr::slice_sample(n = 1) %>%
           dplyr::pull()
       )
+
       alert("Sampled random word {word_to_translate()}")
 
       v_options <- .GlobalEnv$quiz_data$vocab_data  %>%
@@ -134,7 +138,7 @@ mod_quiz_server <- function(id){
         dplyr::slice_sample(n = 4) %>%
         dplyr::pull()
 
-      alert("Sampled random word {word_to_translate()}")
+      show_vector(v_options)
 
       shinyMobile::updateF7Radio(
         inputId = "word_answer", choices = v_options, session = session

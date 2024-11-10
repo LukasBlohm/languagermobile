@@ -102,6 +102,8 @@ var_info <- function(var, call = rlang::caller_env()) {
 #' x_value the result of its evaluation. Adds the `id` of call as a prefix if it
 #' exists.
 #'
+#' This works but is impure.
+#'
 #' @param x Symbol or expression
 #' @param call Environment
 #'
@@ -110,9 +112,34 @@ show_content <- function(x, call = rlang::caller_env()) {
   x_expr <- rlang::enexpr(x)
   x_value <- rlang::inject(!! x_expr, env = call)
   assign("x_name", rlang::as_label(x_expr), envir = call)
+  assign("id", get("id", envir = call), envir = call)
+
   rlang::eval_tidy(rlang::expr(info("{x_name}: {x_value}")), call)
-  rm("x_name", envir = call)
+  rm(list = c("x_name", "id"), envir = call)
 }
+
+
+#' Show vector content
+#'
+#' Print info message of the type x: x_value, where x is an expression and
+#' x_value the result of its evaluation. Adds the `id` of call as a prefix if it
+#' exists.
+#'
+#' @param x Symbol or expression
+#' @param call Environment
+#'
+#' @return Nothing
+show_vector <- function(x, call = rlang::caller_env()) {
+  x_expr <- rlang::enexpr(x)
+  x_value <- rlang::inject(!! x_expr, env = call)
+  id_prefix <- rlang::try_fetch(get("id", envir = call), error = \(cnd) "")
+  cli_function <- get("cli_alert_info", envir = asNamespace("cli"))
+
+  rlang::eval_tidy(
+    call("cli_function", "{id_prefix} - {rlang::as_label(x_expr)}: {x_value}")
+    )
+}
+
 
 # show_content(h)
 #
