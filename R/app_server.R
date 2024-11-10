@@ -6,6 +6,7 @@
 app_server <- function(input, output, session) {
 
   mod_explore_server("explore_module")
+  mod_quiz_server("quiz_module")
   mod_vocab_server("vocab_module")
 
   # shiny::observeEvent(input$tabs, {

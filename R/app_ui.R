@@ -44,7 +44,7 @@ app_ui <- function(request) {
         shinyMobile::f7Tabs(
           id = "tabs",
           animated = TRUE,
-          style = "toolbar",
+          style = "strong", # c("toolbar", "segmented", "strong")
           shinyMobile::f7Tab(
             title = "Explorer",
             tabName = "Explorer",
@@ -55,9 +55,16 @@ app_ui <- function(request) {
           shinyMobile::f7Tab(
             title = "Vocab",
             tabName = "Vocab",
-            icon = shinyMobile::f7Icon("question"),
-            active = TRUE,
+            icon = shinyMobile::f7Icon("pencil_ellipsis_rectangle"),
+            active = FALSE,
             mod_vocab_ui("vocab_module")
+          ),
+          shinyMobile::f7Tab(
+            title = "Quiz",
+            tabName = "Quiz",
+            icon = shinyMobile::f7Icon("question"),
+            active = FALSE,
+            mod_quiz_ui("quiz_module")
           )
         )
       )
