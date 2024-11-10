@@ -89,7 +89,7 @@ mod_explore_server <- function(id){
 
       if (input$check_automode) {
 
-        alert("Automatic sample")
+        info("Automatic sample")
 
         shiny::invalidateLater(1000 * shiny::isolate(input$sample_speed), session)
 
@@ -148,7 +148,7 @@ mod_explore_server <- function(id){
         size = 1
         )
 
-      alert("Manual Sample: {expression_original}")
+      info("Manual Sample: {expression_original}")
 
       expression_original(expression_original )
 
@@ -224,7 +224,7 @@ mod_explore_server <- function(id){
         info("Hide translation")
         output$table <- shiny::renderTable({
 
-          alert(expression_original())
+          show_vector(expression_original())
           # alert("Original expression: {expression_original()}")
 
           data.frame(Original = expression_original(),

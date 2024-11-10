@@ -185,19 +185,19 @@ mod_vocab_server <- function(id){
         shiny::updateTextInput(session, "guess", value = "")
 
         output$word_display <- shiny::renderTable({
-          alert("Show word to translate")
+          info("Show word to translate")
           data.frame(Word = word_to_translate(),
                      Translation = real_translation)
         }, width = "60%")
 
       } else {
         output$feedback <- shiny::renderText({
-          alert("Incorrect submission")
+          danger("Incorrect submission")
           paste0("Incorrect. The actual translation is ", real_translation)
         })
 
         output$word_display <- shiny::renderTable({
-          alert("Show word to translate")
+          info("Show word to translate")
           data.frame(Word = word_to_translate())
         }, width = "60%")
       }

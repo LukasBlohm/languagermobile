@@ -133,7 +133,7 @@ show_vector <- function(x, call = rlang::caller_env()) {
   x_expr <- rlang::enexpr(x)
   x_value <- rlang::inject(!! x_expr, env = call)
   id_prefix <- rlang::try_fetch(get("id", envir = call), error = \(cnd) "")
-  cli_function <- get("cli_alert_info", envir = asNamespace("cli"))
+  cli_function <- get("cli_alert", envir = asNamespace("cli"))
 
   rlang::eval_tidy(
     call("cli_function", "{id_prefix} - {rlang::as_label(x_expr)}: {x_value}")

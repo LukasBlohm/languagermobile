@@ -131,7 +131,7 @@ mod_quiz_server <- function(id){
           dplyr::pull()
       )
 
-      alert("Sampled random word {word_to_translate()}")
+      info("Sampled random word {word_to_translate()}")
 
       v_options <- .GlobalEnv$quiz_data$vocab_data  %>%
         dplyr::select(tidyselect::all_of(input$language_2)) %>%
@@ -187,7 +187,7 @@ mod_quiz_server <- function(id){
         #   alert("Incorrect submission")
         #   paste0("Incorrect. The actual translation is ", real_translation)
         # })
-        alert("Incorrect submission")
+        danger("Incorrect submission")
 
         # output$word_display <- shiny::renderTable({
         #   alert("Show word to translate")
