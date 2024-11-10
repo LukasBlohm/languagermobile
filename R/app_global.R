@@ -5,11 +5,8 @@ path_dropbox <- "dropbox_notes.csv"
 main_color = "deeppurple"
 main_color_hex = "#673ab7"
 
-# rm("stats::filter") # avoid confusion errors when dplyr:: prefix gets forgotten
-# pkgload::unload("stats")
-#
 
-filter <- \() cli::cli_abort("Your forgot dplyr:: prefix")
+filter <- \() cli::cli_abort("Add dplyr:: prefix")
 
 
 .dstate <- new.env(parent = emptyenv())

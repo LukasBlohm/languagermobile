@@ -126,17 +126,19 @@ mod_explore_server <- function(id){
 
       list_reactives$show_translation <- FALSE
 
-      alert("priority_initial() old sample: {priority_initial()}")
-      alert("priority_current() old sample: {priority_current()}")
+      if (has_priority()) {
+        alert("priority_initial() old sample: {priority_initial()}")
+        alert("priority_current() old sample: {priority_current()}")
 
-      # Equal when priority_update is not NA
-      if (has_priority() && isTRUE(priority_initial() != priority_current())) {
-        info("Save priority update")
-        readr::write_csv(df_active(), .GlobalEnv$path_dropbox)
-        suppressWarnings(rdrop2::drop_upload(
-          .GlobalEnv$path_dropbox, mode = "overwrite",
-          dtoken = .GlobalEnv$token
-        ))
+        # Equal when priority_update is not NA
+        if (isTRUE(priority_initial() != priority_current())) {
+          info("Save priority update")
+          readr::write_csv(df_active(), .GlobalEnv$path_dropbox)
+          suppressWarnings(rdrop2::drop_upload(
+            .GlobalEnv$path_dropbox, mode = "overwrite",
+            dtoken = .GlobalEnv$token
+          ))
+        }
       }
 
       expression_original <- sample(

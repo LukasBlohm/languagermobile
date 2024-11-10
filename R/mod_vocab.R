@@ -66,7 +66,9 @@ mod_vocab_server <- function(id){
     word_to_translate <- shiny::reactiveVal("")
 
 
-    shiny::observe({
+    shiny::observeEvent(colnames(.GlobalEnv$quiz_data$vocab_data), {
+
+      shiny::req(nrow(.GlobalEnv$quiz_data$vocab_data) > 0)
 
       info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
 
@@ -93,11 +95,15 @@ mod_vocab_server <- function(id){
     })
 
     shiny::observe({
+
+      shiny::req(nrow(.GlobalEnv$quiz_data$vocab_data) > 0)
+
       list_reactives$other_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN")) %>%
         purrr::discard(~ .x %in% c(input$language_1))
 
-      info("Language 1 set to {input$language_1}, other languages {?is/are} {list_reactives$other_languages}.")
+      other <- list_reactives$other_languages
+      info("Language 1 set to {input$language_1}, {cli::qty(other)}other language{?/s} {?is/are} {other}.")
     })
 
 
