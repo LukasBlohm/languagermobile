@@ -7,6 +7,7 @@
 *.pdf
 *.xlsx
 .Renviron
+man/
 dev/
 !dev/run_dev.R
 data_pdf/

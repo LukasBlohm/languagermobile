@@ -81,4 +81,47 @@ create_message_function <- function(type) {
 purrr::walk(c("alert", "info", "success", "warning", "danger"), create_message_function)
 
 
+#' Show content of variable
+#'
+#' @param var Symbol
+#' @param call Environment
+#'
+#' @return Nothing
+var_info <- function(var, call = rlang::caller_env()) {
+  assign("var_name", var, envir = call)
+  info("{var_name}: {get(var_name)}")
+  rm("var_name", envir = call)
+}
+
+# var_info("h")
+
+
+#' Show variable / expression
+#'
+#' Print info message of the type x: x_value, where x is an expression and
+#' x_value the result of its evaluation. Adds the `id` of call as a prefix if it
+#' exists.
+#'
+#' @param x Symbol or expression
+#' @param call Environment
+#'
+#' @return Nothing
+show_content <- function(x, call = rlang::caller_env()) {
+  x_expr <- rlang::enexpr(x)
+  x_value <- rlang::inject(!! x_expr, env = call)
+  assign("x_name", rlang::as_label(x_expr), envir = call)
+  rlang::eval_tidy(rlang::expr(info("{x_name}: {x_value}")), call)
+  rm("x_name", envir = call)
+}
+
+# show_content(h)
+#
+# t <- new.env()
+# t$h <- "xyz"
+# show_content(h, t)
+#
+# show_content(colnames(mtcars), t)
+# show_content(colnames(mtcars))
+
+
 
