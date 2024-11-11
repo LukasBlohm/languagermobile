@@ -81,45 +81,13 @@ create_message_function <- function(type) {
 purrr::walk(c("alert", "info", "success", "warning", "danger"), create_message_function)
 
 
-#' Show content of variable
-#'
-#' @param var Symbol
-#' @param call Environment
-#'
-#' @return Nothing
-var_info <- function(var, call = rlang::caller_env()) {
-  assign("var_name", var, envir = call)
-  info("{var_name}: {get(var_name)}")
-  rm("var_name", envir = call)
-}
-
-# var_info("h")
 
 
-#' Show variable / expression
-#'
-#' Print info message of the type x: x_value, where x is an expression and
-#' x_value the result of its evaluation. Adds the `id` of call as a prefix if it
-#' exists.
-#'
-#' This works but is impure.
-#'
-#' @param x Symbol or expression
-#' @param call Environment
-#'
-#' @return Nothing
-show_content <- function(x, call = rlang::caller_env()) {
-  x_expr <- rlang::enexpr(x)
-  x_value <- rlang::inject(!! x_expr, env = call)
-  assign("x_name", rlang::as_label(x_expr), envir = call)
-  assign("id", get("id", envir = call), envir = call)
-
-  rlang::eval_tidy(rlang::expr(info("{x_name}: {x_value}")), call)
-  rm(list = c("x_name", "id"), envir = call)
-}
 
 
-#' Show vector content
+
+
+#' Show content of vector or data frame
 #'
 #' Print info message of the type x: x_value, where x is an expression and
 #' x_value the result of its evaluation. Adds the `id` of call as a prefix if it
@@ -129,26 +97,27 @@ show_content <- function(x, call = rlang::caller_env()) {
 #' @param call Environment
 #'
 #' @return Nothing
-show_vector <- function(x, call = rlang::caller_env()) {
+show <- function(x, call = rlang::caller_env()) {
+
   x_expr <- rlang::enexpr(x)
   x_value <- rlang::inject(!! x_expr, env = call)
-  id_prefix <- rlang::try_fetch(get("id", envir = call), error = \(cnd) "")
-  cli_function <- get("cli_alert", envir = asNamespace("cli"))
+  id_prefix <- rlang::try_fetch(paste(get("id", envir = call), "- "), error = \(cnd) "")
 
-  rlang::eval_tidy(
-    call("cli_function", "{id_prefix} - {rlang::as_label(x_expr)}: {x_value}")
-    )
+  UseMethod("show")
 }
 
+show.character <- function(x, call = rlang::caller_env()) {
+  cli::cli_alert_info("{id_prefix}{rlang::as_label(x_expr)}: {x_value}")
+}
 
-# show_content(h)
-#
-# t <- new.env()
-# t$h <- "xyz"
-# show_content(h, t)
-#
-# show_content(colnames(mtcars), t)
-# show_content(colnames(mtcars))
+show.numeric <- function(x, call = rlang::caller_env()) {
+  cli::cli_alert_info("{id_prefix}{rlang::as_label(x_expr)}: {x_value}")
+}
+
+show.data.frame <- function(x, call = rlang::caller_env()) {
+  cli::cli_alert_info("{id_prefix}{rlang::as_label(x_expr)}:")
+  print(head(x_value))
+}
 
 
 

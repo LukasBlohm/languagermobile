@@ -135,7 +135,7 @@ mod_vocab_server <- function(id){
           dplyr::slice_sample(n = 1) %>%
           dplyr::pull()
       )
-      show_vector(word_to_translate())
+      show(word_to_translate())
       # alert("Sampled random word {word_to_translate()}")
     })
 

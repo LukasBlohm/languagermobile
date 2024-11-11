@@ -129,8 +129,8 @@ mod_explore_server <- function(id){
       if (has_priority()) {
         # alert("priority_initial() old sample: {priority_initial()}")
         # alert("priority_current() old sample: {priority_current()}")
-        show_vector(priority_initial())
-        show_vector(priority_current())
+        show(priority_initial())
+        show(priority_current())
 
         # Equal when priority_update is not NA
         if (isTRUE(priority_initial() != priority_current())) {
@@ -162,7 +162,7 @@ mod_explore_server <- function(id){
 
 
         # alert("priority_initial() new sample: {priority_initial}")
-        show_vector(priority_initial())
+        show(priority_initial())
 
         priority_initial(priority_initial)
       }
@@ -224,7 +224,7 @@ mod_explore_server <- function(id){
         info("Hide translation")
         output$table <- shiny::renderTable({
 
-          show_vector(expression_original())
+          show(expression_original())
           # alert("Original expression: {expression_original()}")
 
           data.frame(Original = expression_original(),
@@ -235,6 +235,8 @@ mod_explore_server <- function(id){
 
     output$table_history <- shiny::renderTable({
       shiny::req(df_sample_history())
+
+      # show(df_sample_history())
 
       if (nrow(df_sample_history()) > 0) {
         df_sample_history()
@@ -314,7 +316,7 @@ mod_explore_server <- function(id){
       df_sample_history(data.frame())
       .GlobalEnv$quiz_data$vocab_data <- df_dropbox_static
       #info("colnames available: {colnames(.GlobalEnv$quiz_data$vocab_data)}")
-      show_vector(colnames(.GlobalEnv$quiz_data$vocab_data))
+      show(colnames(.GlobalEnv$quiz_data$vocab_data))
     })
   })
 }

@@ -75,7 +75,7 @@ mod_quiz_server <- function(id){
 
       shiny::req(nrow(.GlobalEnv$quiz_data$vocab_data) > 0)
 
-      show_vector(colnames(.GlobalEnv$quiz_data$vocab_data))
+      show(colnames(.GlobalEnv$quiz_data$vocab_data))
 
       v_languages <- colnames(.GlobalEnv$quiz_data$vocab_data) %>%
         purrr::keep(~ .x %in% c("FR", "DE", "EN"))
@@ -138,7 +138,7 @@ mod_quiz_server <- function(id){
         dplyr::slice_sample(n = 4) %>%
         dplyr::pull()
 
-      show_vector(v_options)
+      show(v_options)
 
       shinyMobile::updateF7Radio(
         inputId = "word_answer", choices = v_options, session = session
